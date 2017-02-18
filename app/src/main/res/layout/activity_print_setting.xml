@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.personcenter.PrintSettingActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="?attr/colorPrimary">
+        <ImageButton
+            android:id="@+id/print_setting_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/mine_back"
+            android:padding="10dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="打印设置"
+            android:textColor="@color/white" />
+    </android.support.v7.widget.Toolbar>
+    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+        android:id="@+id/setting_print"
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="蓝牙打印机" />
+        <TextView
+            android:id="@+id/tv_setting_print"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未连接   "
+            android:textColor="@color/material_red"
+            android:layout_alignParentRight="true"
+            android:drawableRight="@mipmap/icon_mine_details" />
+    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    <!--分割线-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/firstline_color" />
+    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+        android:id="@+id/setting_print_receipt"
+        style="@style/mine_style_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打印小票设置" />
+    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+        android:id="@+id/help_print"
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打印帮助" />
+    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+</LinearLayout>

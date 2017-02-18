@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="15dp">
+        <TextView
+            android:id="@+id/urgingtimes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="-8dp"
+            android:text="第一次催单"
+            android:drawableLeft="@mipmap/first_remind_bugle"
+            android:textColor="@color/first_urge_color"
+            android:background="@drawable/urge_bugle" />
+
+            <TextView
+                android:id="@+id/urgingtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableLeft="@mipmap/first_item_time"
+                android:text="  时间  02:58:12"/>
+
+</LinearLayout>

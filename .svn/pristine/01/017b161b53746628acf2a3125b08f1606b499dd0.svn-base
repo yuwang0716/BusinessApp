@@ -1,0 +1,558 @@
+package com.liuhesan.app.myapplication.fragment;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
+import com.liuhesan.app.myapplication.R;
+import com.liuhesan.app.myapplication.adapter.NewOrderAdapter;
+import com.liuhesan.app.myapplication.bean.User;
+import com.liuhesan.app.myapplication.http.HttpMethods;
+import com.liuhesan.app.myapplication.http.HttpMethods_eleme_data;
+
+import com.liuhesan.app.myapplication.http.HttpMethods_third_data;
+
+import com.liuhesan.app.myapplication.utility.API;
+import com.liuhesan.app.myapplication.utility.NewOrderData_baidu;
+import com.liuhesan.app.myapplication.utility.NewOrderData_eleme;
+import com.liuhesan.app.myapplication.utility.NewOrderData_meituan;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+import java.util.Date;
+import java.util.List;
+
+import okhttp3.Call;
+
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import rx.Subscriber;
+
+/**
+ * Created by Home on 2016/11/9.
+ */
+
+public class NeworderFragment extends Fragment {
+    private ListView mListView;
+    private MaterialRefreshLayout refreshLayout;
+    private View view;
+    private List<User> newOrder_data;
+    private List<User> userList;
+    private NewOrderAdapter mNewOrderAdapter;
+    private String uuid;
+    private String ksid;
+    private String shopId;
+    private ImageView logo;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_first_neworder, container, false);
+        initView();
+        initData();
+        return view;
+    }
+
+    //初始化新订单
+    private void initData() {
+       getBaiduNewOrderData();
+        getMeituanOrderData();
+      getElemeOrderData();
+        refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
+            @Override
+            public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+             getBaiduNewOrderData();
+               getMeituanOrderData();
+              getElemeOrderData();
+                materialRefreshLayout.finishRefresh();
+            }
+        });
+    }
+
+    //获取百度新订单
+    private void getBaiduNewOrderData() {
+        HttpMethods_third_data.getInstance(getContext()).getNewOrder(API.new_order_BASEURL, 1, new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(String s) {
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    int new_order_count = data.optInt("new_order_count");
+                    Log.i("TAGnew_order_count", new_order_count + "onNext: ");
+
+
+                    //测试
+                   /* newOrder_data = NewOrderData_baidu.getNewOrderData(Jsonneworder.neworder);
+                    if (newOrder_data.size() != 0) {
+                        //新订单上报服务器
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                        String token = sharedPreferences.getString("token", "");
+                        HttpMethods.getInstance(getContext()).commit(API.url_login, token, "baidu", s, new Subscriber<String>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(String s) {
+
+                            }
+                        });
+                        mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data, "baidu");
+                        mListView.setAdapter(mNewOrderAdapter);
+                    }*/
+
+
+                    if (new_order_count > 0){
+                        //获取新订单详情
+                        HttpMethods_third_data.getInstance(getContext()).getNewOrderdata(API.new_order_BASEURL, "neworderlist", "json", new Subscriber<String>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                            @Override
+                            public void onNext(String s) {
+                                if (mNewOrderAdapter == null) {
+                                    Log.i("TAGssss", s+"onNext: ");
+                                    newOrder_data = NewOrderData_baidu.getNewOrderData(s);
+                                    if (newOrder_data.size() != 0) {
+                                        logo.setBackground(getResources().getDrawable(R.mipmap.icon_baidu));
+                                        //新订单上报服务器
+                                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                                        String token = sharedPreferences.getString("token", "");
+                                        HttpMethods.getInstance(getContext()).commit(API.url_login, token, "baidu", s, new Subscriber<String>() {
+                                            @Override
+                                            public void onCompleted() {
+
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+
+                                            }
+
+                                            @Override
+                                            public void onNext(String s) {
+
+                                            }
+                                        });
+                                        mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data,"baidu");
+                                        mListView.setAdapter(mNewOrderAdapter);
+                                    }
+                                }else {
+                                     userList = newOrder_data;
+                                     newOrder_data.clear();
+                                    newOrder_data.addAll(NewOrderData_baidu.getNewOrderData(s));
+                                    newOrder_data.addAll(userList);
+                                    if (newOrder_data.size() != 0) {
+                                        mNewOrderAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    //获取美团新订单
+    private void getMeituanOrderData() {
+
+      //  new Thread(getThread).start();
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("meituan" + "cookie", Context.MODE_PRIVATE);
+        Log.i("TAGendmeituanaaa", sharedPreferences.getString("cookie", "") + "intercept: " + "  " + "meituan" + "cookie");
+        OkGo.get("https://waimaie.meituan.com/v2/order/receive/unprocessed/r/count")
+                .tag(this)
+                .headers("cookie",sharedPreferences.getString("cookie", "") )
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(s);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        JSONObject data = jsonObject.optJSONObject("data");
+                        int count = 0;
+                        if (data != null) {
+                            count = data.optInt("count");
+                        }
+                        Log.i("TAGnew_order_count", count + "onNext: ");
+
+
+                            //测试
+                          /*  newOrder_data = NewOrderData_meituan.getNewOrderData(Jsonneworder_meituan.neworder);
+                        Log.i("TAGcount",Jsonneworder_meituan.neworder+"onSuccess: ");
+                           SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                            String token = sharedPreferences.getString("token", "");
+                            HttpMethods.getInstance(getContext()).commit(API.url_login, token, "meit", s, new Subscriber<String>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onNext(String s) {
+
+                                }
+                            });
+                            mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data, "meituan");
+                            mListView.setAdapter(mNewOrderAdapter);*/
+
+
+
+                                if (count > 0) {
+                                    /*SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
+                                    Date curDate=new Date(System.currentTimeMillis());//获取当前时间     
+                                    String time = formatter.format(curDate);*/
+                                    Date dt = new Date();
+                                    String time = String.valueOf(dt.getTime());
+                                    SharedPreferences sharedPreferences = getContext().getSharedPreferences("meituan" + "cookie", Context.MODE_PRIVATE);
+                           OkGo.get(API.url_meituan_data)
+                                   .tag(this)
+                                   .params("time",time)
+                                   .params("isQuery","1")
+                                   .params("getNewVo","1")
+                                   .headers("cookie",sharedPreferences.getString("cookie", ""))
+                                   .execute(new StringCallback() {
+                                       @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                                       @Override
+                                       public void onSuccess(String s, Call call, Response response) {
+                                           Log.i("TAGnew_order_count1", s+"onNext: ");
+                                           newOrder_data = NewOrderData_meituan.getNewOrderData(s);
+                                           if (newOrder_data.size() != 0) {
+                                               //新订单上报服务器
+                                               logo.setBackground(getResources().getDrawable(R.mipmap.icon_meituan));
+                                               SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                                               String token = sharedPreferences.getString("token", "");
+                                               HttpMethods.getInstance(getContext()).commit(API.url_login, token, "meit", s, new Subscriber<String>() {
+                                                   @Override
+                                                   public void onCompleted() {
+
+                                                   }
+
+                                                   @Override
+                                                   public void onError(Throwable e) {
+
+                                                   }
+
+                                                   @Override
+                                                   public void onNext(String s) {
+
+                                                   }
+                                               });
+                                               mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data,"meituan");
+                                               mListView.setAdapter(mNewOrderAdapter);
+                                           }else {
+                                               userList = newOrder_data;
+                                               newOrder_data.clear();
+                                               newOrder_data.addAll(NewOrderData_baidu.getNewOrderData(s));
+                                               newOrder_data.addAll(userList);
+                                               if (newOrder_data.size() != 0) {
+                                                   mNewOrderAdapter.notifyDataSetChanged();
+                                               }
+                                           }
+                                       }
+                                   });
+
+
+
+
+
+                            }
+                        }
+
+
+                });
+    }
+
+
+    //获取饿了么新订单
+    private void getElemeOrderData() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
+        uuid = sharedPreferences.getString("cookie", "");
+        ksid = sharedPreferences.getString("ksid", "");
+        shopId = sharedPreferences.getString("shopId", "");
+
+        if (!TextUtils.isEmpty(uuid)) {
+            uuid = uuid.substring(0, uuid.length() - 1);
+        }
+        String json = "{\"id\":\"" + uuid + "\",\"method\":\"pollingForHighFrequency\",\"service\":" +
+                "\"PollingService\",\"params\":{\"shopId\":" + shopId + "},\"metas\":{\"appName\":\"melody\"," +
+                "\"appVersion\":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
+        HttpMethods_eleme_data.getInstance(getContext()).getData(API.url_login_eleme, "PollingService.pollingForHighFrequency", body, new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i("TAGelemedata", e + "onError: ");
+            }
+
+            @Override
+            public void onNext(String s) {
+                Log.i("TAGelemedata", s + "onNext: ");
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(s);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String result = jsonObject.optString("result");
+                Log.i("TAGnew_order_count", result + "onNext: ");
+
+                if (!TextUtils.isEmpty(result)) {
+                    //获取新订单详情
+                    String json = "{\"id\":\"" + uuid + "\",\"method\":\"queryOrder\",\"service\":" +
+                            "\"OrderService\",\"params\":{\"shopId\":\"" + shopId + "\",\"orderFilter\":" +
+                            "\"UNPROCESSED_ORDERS\"},\"metas\":{\"appName\":\"melody\",\"appVersion\"" +
+                            ":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+                    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
+                    HttpMethods_eleme_data.getInstance(getContext()).getData(API.url_login_eleme, "OrderService.queryOrder", body, new Subscriber<String>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        @Override
+                        public void onNext(String s) {
+                            if (mNewOrderAdapter == null) {
+                                Log.i("TAGssss", s + "onNext: ");
+                                newOrder_data = NewOrderData_eleme.getNewOrderData(s);
+                                if (newOrder_data.size() != 0) {
+                                    //新订单上报服务器
+                                    logo.setBackground(getResources().getDrawable(R.mipmap.icon_eleme));
+                                    SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                                    String token = sharedPreferences.getString("token", "");
+                                    HttpMethods.getInstance(getContext()).commit(API.url_login, token, "elem", s, new Subscriber<String>() {
+                                        @Override
+                                        public void onCompleted() {
+
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+
+                                        }
+
+                                        @Override
+                                        public void onNext(String s) {
+
+                                        }
+                                    });
+                                    mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data, "eleme");
+                                    mListView.setAdapter(mNewOrderAdapter);
+                                }
+                            } else {
+                                userList = newOrder_data;
+                                newOrder_data.clear();
+                                newOrder_data.addAll(NewOrderData_baidu.getNewOrderData(s));
+                                newOrder_data.addAll(userList);
+                                if (newOrder_data.size() != 0) {
+                                    mNewOrderAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        }
+                    });
+                }
+
+
+            }
+        });
+    }
+
+    private void initView() {
+        mListView = (ListView) view.findViewById(R.id.first_listview);
+        refreshLayout = (MaterialRefreshLayout) view.findViewById(R.id.refresh);
+        logo = (ImageView) view.findViewById(R.id.logo);
+    }
+   /* private Thread getThread = new Thread() {
+        public void run() {
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL("https://waimaie.meituan.com/v2/order/receive/unprocessed/r/count");
+                connection = (HttpURLConnection) url.openConnection();
+                // 设置请求方法，默认是GET
+                connection.setRequestMethod("GET");
+                // 设置字符集
+                connection.setRequestProperty("Charset", "UTF-8");
+                // 设置文件类型
+                connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+                // 设置请求参数，可通过Servlet的getHeader()获取
+                connection.setRequestProperty("Cookie", "device_uuid=!c7982aab-9abe-425e-ae5c-82500accf452; uuid_update=true; wpush_server_url=wss://wpush.meituan.com; shopCategory=food; JSESSIONID=t5njplrb772pvtc6yaanjy94; acctId=20527143; token=0Zf_Te5QCtaZ6ax85qxBMnd8RfV-t1lCK-KdbC2nBLCg*; brandId=-1; wmPoiId=879516; selfOpenWmPoiList=[]; isOfflineSelfOpen=0; city_id=140100; isChain=0; existBrandPoi=false;");
+                // 设置自定义参数
+
+                if (connection.getResponseCode() == 200) {
+                    InputStream is = connection.getInputStream();
+                    BufferedReader bf = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    //最好在将字节流转换为字符流的时候 进行转码
+                    StringBuffer buffer = new StringBuffer();
+                    String line = "";
+                    while ((line = bf.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    Log.i("TAG", buffer.toString()+"run: ");
+                    if (1 > 0) {
+                           *//*SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
+                           Date curDate=new Date(System.currentTimeMillis());//获取当前时间     
+                           String time = formatter.format(curDate);*//*
+                        Date dt = new Date();
+                        String time = String.valueOf(dt.getTime());
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("meituan" + "cookie", Context.MODE_PRIVATE);
+                           *//*OkGo.get(API.url_meituan_data)
+                                   .tag(this)
+                                   .params("time",time)
+                                   .params("isQuery","1")
+                                   .params("getNewVo","1")
+                                   .headers("cookie",sharedPreferences.getString("cookie", ""))
+                                   .execute(new StringCallback() {
+                                       @Override
+                                       public void onSuccess(String s, Call call, Response response) {
+                                           Log.i("TAGnew_order_count1", s+"onNext: ");
+                                       }
+                                   });*//*
+
+
+                        //测试
+                        newOrder_data = NewOrderData_meituan.getNewOrderData(Jsonneworder_meituan.neworder);
+                        sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                        String token = sharedPreferences.getString("token", "");
+                        HttpMethods.getInstance(getContext()).commit(API.url_login, token, "meit", buffer.toString(), new Subscriber<String>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(String s) {
+
+                            }
+                        });
+
+
+
+                            *//*   if (newOrder_data.size() != 0) {
+                                   //新订单上报服务器
+                                   SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
+                                   String token = sharedPreferences.getString("token", "");
+                                   HttpMethods.getInstance(getContext()).commit(API.url_login, token, "meit", s, new Subscriber<String>() {
+                                       @Override
+                                       public void onCompleted() {
+
+                                       }
+
+                                       @Override
+                                       public void onError(Throwable e) {
+
+                                       }
+
+                                       @Override
+                                       public void onNext(String s) {
+
+                                       }
+                                   });
+                                   mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data);
+                                   mListView.setAdapter(mNewOrderAdapter);
+                               }else {
+                               userList = newOrder_data;
+                               newOrder_data.clear();
+                               newOrder_data.addAll(NewOrderData_baidu.getNewOrderData(s));
+                               newOrder_data.addAll(userList);
+                               if (newOrder_data.size() != 0) {
+                                   mNewOrderAdapter.notifyDataSetChanged();
+                               }
+                           }*//*
+                        Message msg = Message.obtain();
+                        msg.what = 0;
+                        mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data, "meituan");
+                        msg.obj = mNewOrderAdapter;
+                        getHandler.sendMessage(msg);
+
+                    }
+
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        }
+    };*/
+  /*  private Handler getHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what == 0 ) {
+                mNewOrderAdapter = (NewOrderAdapter) msg.obj;
+                mListView.setAdapter(mNewOrderAdapter);
+            }
+        }
+
+        ;
+    };*/
+}
+

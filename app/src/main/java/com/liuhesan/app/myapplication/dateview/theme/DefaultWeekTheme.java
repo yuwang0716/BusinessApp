@@ -1,0 +1,43 @@
+package com.liuhesan.app.myapplication.dateview.theme;
+
+import android.graphics.Color;
+
+/**
+ * Created by Administrator on 2016/7/31.
+ */
+public class DefaultWeekTheme implements IWeekTheme {
+    @Override
+    public int colorTopLinen() {
+        return Color.parseColor("#CCE4F2");
+    }
+
+    @Override
+    public int colorBottomLine() {
+        return Color.parseColor("#CCE4F2");
+    }
+
+    @Override
+    public int colorWeekday() {
+        return Color.parseColor("#404040");
+    }
+
+    @Override
+    public int colorWeekend() {
+        return Color.parseColor("#404040");
+    }
+
+    @Override
+    public int colorWeekView() {
+        return Color.parseColor("#FEFEFF");
+    }
+
+    @Override
+    public int sizeLine() {
+        return 4;
+    }
+
+    @Override
+    public int sizeText() {
+        return 15;
+    }
+}

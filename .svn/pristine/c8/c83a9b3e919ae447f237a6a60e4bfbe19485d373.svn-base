@@ -1,0 +1,73 @@
+package com.liuhesan.app.myapplication.adapter;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import com.liuhesan.app.myapplication.R;
+
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * Created by Tao on 2016/11/14.
+ */
+
+public class GoodsAdapter extends BaseAdapter {
+    private List<Map<String, String>> goods_list;
+    private Context mContext;
+
+    public GoodsAdapter(Context mContext, List<Map<String, String>> goods_list) {
+        this.mContext = mContext;
+        this.goods_list = goods_list;
+    }
+
+    @Override
+    public int getCount() {
+        return goods_list.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return goods_list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder mViewHolder ;
+        if (convertView == null) {
+            convertView = View.inflate(mContext, R.layout.order_item, null);
+            mViewHolder = new ViewHolder(convertView);
+            convertView.setTag(mViewHolder);
+        } else {
+            mViewHolder = (ViewHolder) convertView.getTag();
+        }
+        mViewHolder.dishname.setText(goods_list.get(position).get("name"));
+        mViewHolder.dishnums.setText(goods_list.get(position).get("number"));
+        mViewHolder.dishprice.setText(goods_list.get(position).get("shop_price"));
+        return convertView;
+    }
+
+    class ViewHolder {
+        @BindView(R.id.dishname)
+        TextView dishname;
+        @BindView(R.id.dishnums)
+        TextView dishnums;
+        @BindView(R.id.dishprice)
+        TextView dishprice;
+
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+}

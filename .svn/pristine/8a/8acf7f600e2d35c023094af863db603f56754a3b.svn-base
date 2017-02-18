@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+
+
+    <style type="text/css">
+	
+
+	.input{
+
+		width: 90%;
+		height: 30px;
+	}
+	.button{
+
+		width: 60%;
+		height: 20px;
+		background: #fff;
+		color: #000
+
+	}
+
+
+    </style>
+
+    <script type="text/javascript">
+	
+
+	function getValues(){
+		var user = document.getElementById("user").value;
+		var pwd = document.getElementById("pwd").value;
+		var imgtext = document.getElementById("imgtext").value;
+   		var pwd = BaiduEncrypt.simplencrypt(pwd);
+		window.app.getValues(user,pwd,imgtext);
+	}
+
+	function initTitle(img){
+	        document.getElementById("myimg").src = img;
+            document.getElementById("title").innerHTML = "登陆百度外卖";
+            document.getElementById("forbaidu").style.display = "block";
+	}
+
+  var BaiduEncrypt = {
+    a:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    simplencrypt: function(r){if(r){r=this.compile(r);var e=new RegExp("=","g");return r=r.replace(e,""),r=r.split("").reverse().join("")}},
+    compile: function(r){var e,t,o,c,i,h;a=this.a;for(o=r.length,t=0,e="";o>t;){if(c=255&r.charCodeAt(t++),t==o){e+=a.charAt(c>>2),e+=a.charAt((3&c)<<4),e+="==";break}if(i=r.charCodeAt(t++),t==o){e+=a.charAt(c>>2),e+=a.charAt((3&c)<<4|(240&i)>>4),e+=a.charAt((15&i)<<2),e+="=";break}h=r.charCodeAt(t++),e+=a.charAt(c>>2),e+=a.charAt((3&c)<<4|(240&i)>>4),e+=a.charAt((15&i)<<2|(192&h)>>6),e+=a.charAt(63&h)}return e}
+  };
+
+
+
+    </script>
+
+</head>
+<body>
+
+
+<form method="post" action="mailto:email@example.com">
+    <center><h1 id="title"></h1></center>
+    用户名:<input type="text" id="user" name="Name" size="15" maxlength="15"/><br/>
+
+    密码:<input type="text" id="pwd" name="Last_name" size="25" maxlength="25"/><br/>
+
+    <div id="forbaidu"><input type="text" id="imgtext" name="Last_name" size="25" maxlength="25"/>
+    <img id="myimg" src=""/><br/>
+    </div>
+    <input type="button" value="登陆" onclick="getValues()"/>
+
+</form>
+
+</body>
+</html>
+

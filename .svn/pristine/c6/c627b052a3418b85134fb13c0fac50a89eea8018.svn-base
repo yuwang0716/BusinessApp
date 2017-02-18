@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical"
+    android:background="@color/white">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        >
+        <TextView
+            android:id="@+id/ordernumberone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#1"
+            android:textSize="19dp"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ordernumberone"
+            android:text="立即送餐"
+            android:textColor="@color/firsttext_color"
+            android:layout_marginLeft="20dp"
+            android:layout_alignTop="@+id/ordernumbertwo" />
+        <TextView
+            android:id="@+id/ordernumbertwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#2"
+            android:layout_toLeftOf="@+id/logo"
+            android:layout_centerVertical="true" />
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/icon_first_logo"
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+    <!--分割线-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/firstline_color"/>
+    <include layout="@layout/content"/>
+    <LinearLayout
+        android:id="@+id/first_buttons"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="25dp"
+        android:paddingLeft="15dp"
+        android:layout_marginBottom="20dp">
+
+        <Button
+            android:id="@+id/cancel_first"
+            style="@style/first_item_cancelbutton"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/print_first"
+            style="@style/first_remind_print"
+            android:text="@string/print" />
+    </LinearLayout>
+</LinearLayout>

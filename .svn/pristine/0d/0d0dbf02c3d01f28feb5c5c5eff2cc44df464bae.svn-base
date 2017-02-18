@@ -1,0 +1,31 @@
+package com.liuhesan.app.myapplication.utility;
+
+/**
+ * Created by Tao on 2016/11/21.
+ */
+
+public class API {
+    //系统登录
+    public static final String url_login = "http://59.110.16.80/rest/";
+    //百度外卖
+    public static final String url_baidu = "https://wmpass.baidu.com/";
+    public static final String url_baidu_cancel = "https://wmcrm.baidu.com/";
+
+    //美团外卖
+    public static final String url_meituan = "http://e.waimai.meituan.com/";
+    public static final String url_meituan_data = "https://waimaie.meituan.com/v2/order/receive/unprocessed/r/";
+
+    //饿了么外卖
+    public static final String url_uuid_eleme = "http://melody.shop.ele.me/eleme/";
+    public static final String url_login_eleme = "http://app-api.shop.ele.me/";
+    private static String REURL;
+    public static String new_order_BASEURL ="https://wmcrm.baidu.com/";
+
+    public static String getREURL() {
+        return REURL;
+    }
+
+    public static void setREURL(String REURL) {
+        API.REURL = REURL;
+    }
+}

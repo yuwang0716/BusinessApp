@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <!--login-->
+    <string name="login_username_hint">请输入账号</string>
+    <string name="login_userpwd_hint">请输入密码</string>
+    <string name="login_content_forn">我同意</string>
+    <string name="login_content">《商家后台服务责任》</string>
+    <string name="login_button">登录</string>
+    <string name="entry">立即体验</string>
+    <!--main-->
+    <string name="first">首页</string>
+    <string name="order">订单</string>
+    <string name="running">运营</string>
+    <string name="mine">我的</string>
+    <!--首页-->
+    <string name="neworder">新订单</string>
+    <string name="remind">订单提醒</string>
+    <string name="cancel">取消订单</string>
+    <string name="print">接单并打印</string>
+    <array name="remind_titles">
+        <item>催单</item>
+        <item>退款</item>
+        <item>预约</item>
+        <item>异常</item>
+
+    </array>
+    <!--订单-->
+    <array name="order_titles">
+        <item>待配送</item>
+        <item>配送中</item>
+        <item>已完成</item>
+        <item>已失效</item>
+    </array>
+    <!--运营-->
+    <array name="running_titles">
+        <item>订单数据</item>
+        <item>用户数据</item>
+        <item>财务数据</item>
+    </array>
+    <string name="account">对账单</string>
+    <string name="transaction">交易记录</string>
+</resources>

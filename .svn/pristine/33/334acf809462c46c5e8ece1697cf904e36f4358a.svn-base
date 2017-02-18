@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+	hideDotFiles = dotGitOnly
+[remote "origin"]
+	url = \\\\LIUHESAN_SERV\\liuhesan\\apk.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

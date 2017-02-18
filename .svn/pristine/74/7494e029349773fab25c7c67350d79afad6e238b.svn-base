@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#23c0af</color>
+    <color name="colorPrimaryDark">#23c0af</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorFragment">#f6f6f6</color>
+    <color name="white">#ffffff</color>
+    <color name="bg_color">#23c0af</color>
+    <color name="printbt_color">#23c0af</color>
+    <color name="cancelbt_color">#f0da23</color>
+    <!--首页-->
+    <color name="firstline_color">#e5e5e5</color>
+    <color name="firstordernums_line_color">#f36e2d</color>
+    <color name="firstphone_num_color">#1673dc</color>
+    <color name="firstnow_color">#db1e1c</color>
+    <color name="firsttext_color">#bcbcbd</color>
+    <!--运营-->
+    <color name="transationstatebutton_color">#e60012</color>
+    <color name="userdata_blue_color">#5379e8</color>
+    <color name="userdata_yellow_color">#fcc91e</color>
+    <color name="userdata_green_color">#17bfae</color>
+    <color name="userdata_line_color">#f8b551</color>
+    <!--我的-->
+    <color name="mine_text_one">#333232</color>
+    <color name="mine_text_two">#bcbcbd</color>
+    <color name="mine_text_vip">#555454</color>
+</resources>
