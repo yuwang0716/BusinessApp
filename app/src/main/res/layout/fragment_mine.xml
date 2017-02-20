@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:background="@mipmap/mine_img_head_end">
-            <com.liuhesan.app.myapplication.widget.CircleImageView
+            <com.liuhesan.app.businessapp.widget.CircleImageView
                 app:border_width="5dp"
                 app:border_color="#0000"
                 android:src="@mipmap/default_personal_image"
@@ -119,7 +119,7 @@
                     android:paddingBottom="25dp"
                     android:paddingTop="25dp">
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_mystore"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -140,9 +140,9 @@
                             android:text="我的门店"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_state"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -163,9 +163,9 @@
                             android:text="营业状态"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_time"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -186,9 +186,9 @@
                             android:text="营业时间"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_inventory"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -209,7 +209,7 @@
                             android:text="库存管理"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
                 </LinearLayout>
 
@@ -220,7 +220,7 @@
                     android:orientation="horizontal"
                     android:paddingBottom="25dp">
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_sms"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -241,9 +241,9 @@
                             android:text="短信管理"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_logistics"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -264,7 +264,7 @@
                             android:text="物流管理"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -329,7 +329,7 @@
                     android:paddingBottom="25dp"
                     android:paddingTop="25dp">
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_ordersetting"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -350,9 +350,9 @@
                             android:text="接单设置"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_remindersetting"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -373,9 +373,9 @@
                             android:text="提示设置"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_print"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -396,7 +396,7 @@
                             android:text="打印设置"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -450,7 +450,7 @@
                     android:paddingBottom="25dp"
                     android:paddingTop="25dp">
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_limit"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -473,9 +473,9 @@
                             android:text="权限设置"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-                    <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+                    <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                         android:id="@+id/mine_safety"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -496,7 +496,7 @@
                             android:text="安全设置"
                             android:textColor="@color/mine_text_two"
                             android:textSize="12sp" />
-                    </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+                    </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
                     <LinearLayout
                         android:layout_width="0dp"

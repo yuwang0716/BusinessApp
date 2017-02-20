@@ -4,7 +4,7 @@
     android:id="@+id/activity_welcome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.liuhesan.app.myapplication.ui.personcenter.WelcomeActivity">
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.WelcomeActivity">
     <ImageView
         android:id="@+id/iv"
         android:layout_width="match_parent"

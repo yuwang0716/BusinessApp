@@ -53,7 +53,7 @@
                 android:textColor="@color/firstphone_num_color"
                 android:textSize="12dp" />
 
-            <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+            <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                 android:id="@+id/order_nums_linearlayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -71,9 +71,9 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="6dp" />
 
-            </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+            </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
-            <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+            <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
                 android:id="@+id/content_imagebuttons"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -93,9 +93,9 @@
                     android:layout_height="wrap_content"
                     android:background="@mipmap/first_item_less"
                     android:visibility="gone" />
-            </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+            </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
         </LinearLayout>
-            <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+            <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                 android:id="@+id/useraddress_expand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:maxLines="2" />
-            </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+            </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
             <LinearLayout
                 android:id="@+id/rideman"
                 android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
             </LinearLayout>
-            <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+            <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
                 android:id="@+id/online_pay_expand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -208,8 +208,8 @@
                     android:text="02：36下单"
                     android:textColor="@color/firsttext_color" />
 
-            </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
-        <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+            </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
+        <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
             android:id="@+id/reason_expand"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -229,8 +229,8 @@
                 android:layout_marginTop="10dp"
                 android:lineSpacingExtra="5dp"
                 android:background="@drawable/order_numsbutton"/>
-        </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
-        <com.liuhesan.app.myapplication.widget.LinearLayoutForButton
+        </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
+        <com.liuhesan.app.businessapp.widget.LinearLayoutForButton
             android:id="@+id/expand"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -336,12 +336,12 @@
                 android:layout_height="10dp"
                 android:background="@color/colorFragment" />
 
-            <com.liuhesan.app.myapplication.widget.ListViewForScrollView
+            <com.liuhesan.app.businessapp.widget.ListViewForScrollView
                 android:id="@+id/order_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:paddingRight="20dp"></com.liuhesan.app.myapplication.widget.ListViewForScrollView>
+                android:paddingRight="20dp"></com.liuhesan.app.businessapp.widget.ListViewForScrollView>
             <!--分割线-->
             <TextView
                 android:layout_width="match_parent"
@@ -466,7 +466,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/firsttext_color" />
             </LinearLayout>
-        </com.liuhesan.app.myapplication.widget.LinearLayoutForButton>
+        </com.liuhesan.app.businessapp.widget.LinearLayoutForButton>
 
     </LinearLayout>
 </LinearLayout>

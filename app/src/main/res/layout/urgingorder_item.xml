@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/firstline_color"/>
-   <com.liuhesan.app.myapplication.widget.ListViewForScrollView
+   <com.liuhesan.app.businessapp.widget.ListViewForScrollView
        android:id="@+id/urginglist"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"

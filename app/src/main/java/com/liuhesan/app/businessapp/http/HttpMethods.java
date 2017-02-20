@@ -1,0 +1,109 @@
+package com.liuhesan.app.businessapp.http;
+
+import android.content.Context;
+
+import com.liuhesan.app.businessapp.service.IsThirdLoginSuccessService;
+import com.liuhesan.app.businessapp.service.LoginSuccessService;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * Created by Tao on 2016/11/17.
+ */
+
+public class HttpMethods {
+    private static final int DEFAULT_TIMEOUT = 5;
+
+    private Retrofit retrofit;
+    private static Context mContext;
+    private LoginSuccessService loginSuccessService;
+    private IsThirdLoginSuccessService isThirdLoginSuccessService;
+    private final OkHttpClient.Builder builder;
+
+    //构造方法私有
+    private HttpMethods() {
+        //手动创建一个OkHttpClient并设置超时时间
+        builder = new OkHttpClient.Builder();
+        builder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+    }
+    private void  getRetrofit(String url){
+        retrofit = new Retrofit.Builder()
+                .client(builder.build())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .baseUrl(url)
+                .build();
+    }
+    //在访问HttpMethods时创建单例
+    private static class SingletonHolder{
+        private static final HttpMethods INSTANCE = new HttpMethods();
+    }
+
+    //获取单例
+    public static HttpMethods getInstance(Context context){
+        mContext = context;
+        return SingletonHolder.INSTANCE;
+    }
+    //系统登录
+    public void loginSuccess(String url,String username,String password,Subscriber<String> subscriber){
+        getRetrofit(url);
+        loginSuccessService = retrofit.create(LoginSuccessService.class);
+        loginSuccessService.loginSuccess(username,password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+    //第三方是否登录成功
+    public void thirdLoginSuccess(String url,String takenoutname,String token,Subscriber<String> subscriber){
+        getRetrofit(url);
+        isThirdLoginSuccessService = retrofit.create(IsThirdLoginSuccessService.class);
+        isThirdLoginSuccessService.thirdLoginSuccess(takenoutname,token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+    //上报第三方登录
+    public  void commitThirdLogin(String url,String takenoutname,String token,String username,String password,
+                                  String cookies,Subscriber<String> subscriber){
+        getRetrofit(url);
+        isThirdLoginSuccessService = retrofit.create(IsThirdLoginSuccessService.class);
+        isThirdLoginSuccessService.commitThirdLogin(takenoutname,token,username,password,cookies)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+    //上报新订单
+    public  void commit(String url,String token,String thirdName,String data,Subscriber<String> subscriber){
+        getRetrofit(url);
+        loginSuccessService = retrofit.create(LoginSuccessService.class);
+        loginSuccessService.commit(token,thirdName,data)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+    //操作新订单
+    public void operation(String url,String operation,String token,Map<String, String> params,Subscriber<String> subscriber){
+        getRetrofit(url);
+        loginSuccessService = retrofit.create(LoginSuccessService.class);
+        loginSuccessService.operation(operation,token,params)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+  /* private <T> void toSubscribe(Observable<T> o, Subscriber<T> s){
+        o.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s);
+    }*/
+
+
+
+}

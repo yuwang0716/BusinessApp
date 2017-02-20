@@ -25,9 +25,9 @@
                 android:background="@drawable/transactionbutton"
                 android:textColor="@color/colorPrimary"/>
         </LinearLayout>
-    <com.liuhesan.app.myapplication.widget.NoScrollViewPager
+    <com.liuhesan.app.businessapp.widget.NoScrollViewPager
         android:id="@+id/running_financedata_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.liuhesan.app.myapplication.widget.NoScrollViewPager>
+        android:layout_height="match_parent"></com.liuhesan.app.businessapp.widget.NoScrollViewPager>
 
 </LinearLayout>

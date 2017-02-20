@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.liuhesan.app.myapplication.ui.personcenter.MainActivity">
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.MainActivity">
 
     <FrameLayout
         android:id="@+id/realtabcontent"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@color/colorFragment"></FrameLayout>
-    <com.liuhesan.app.myapplication.widget.FragmentTabHost
+    <com.liuhesan.app.businessapp.widget.FragmentTabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,5 +23,5 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="0"></FrameLayout>
-    </com.liuhesan.app.myapplication.widget.FragmentTabHost>
+    </com.liuhesan.app.businessapp.widget.FragmentTabHost>
 </LinearLayout>

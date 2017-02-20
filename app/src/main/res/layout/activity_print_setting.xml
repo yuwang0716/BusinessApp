@@ -25,7 +25,7 @@
             android:text="打印设置"
             android:textColor="@color/white" />
     </android.support.v7.widget.Toolbar>
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+    <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/setting_print"
         android:layout_marginTop="16dp"
         style="@style/mine_style_layout">
@@ -43,13 +43,13 @@
             android:textColor="@color/material_red"
             android:layout_alignParentRight="true"
             android:drawableRight="@mipmap/icon_mine_details" />
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
     <!--分割线-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/firstline_color" />
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+    <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/setting_print_receipt"
         style="@style/mine_style_layout">
 
@@ -57,8 +57,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="打印小票设置" />
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+    </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
+    <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/help_print"
         android:layout_marginTop="16dp"
         style="@style/mine_style_layout">
@@ -67,5 +67,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="打印帮助" />
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
 </LinearLayout>

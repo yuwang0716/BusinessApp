@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.liuhesan.app.myapplication.ui.personcenter.MystoreActivity">
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.MystoreActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <com.liuhesan.app.myapplication.widget.CircleImageView
+        <com.liuhesan.app.businessapp.widget.CircleImageView
             app:border_width="5dp"
             app:border_color="#0000"
             android:src="@mipmap/default_personal_image"
@@ -73,8 +73,7 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
-        android:id="@+id/rl_mystore_name"
+    <RelativeLayout
         android:layout_marginTop="16dp"
         style="@style/mine_style_layout">
 
@@ -89,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="大唐夜宵"/>
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    </RelativeLayout>
     <!--分割线-->
     <TextView
         android:layout_width="match_parent"
@@ -114,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/firstline_color"/>
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+    <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/rl_mystore_shop_phone"
         style="@style/mine_style_layout">
 
@@ -128,5 +127,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true" />
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
 </LinearLayout>

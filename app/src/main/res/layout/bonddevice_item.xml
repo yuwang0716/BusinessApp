@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.liuhesan.app.myapplication.widget.RelativeLayoutForButton
+    <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/setting_print"
         android:layout_marginTop="16dp"
         style="@style/mine_style_layout">
@@ -20,5 +20,5 @@
             android:textColor="@color/material_red"
             android:layout_alignParentRight="true"
             android:drawableRight="@mipmap/icon_mine_details" />
-    </com.liuhesan.app.myapplication.widget.RelativeLayoutForButton>
+    </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
 </LinearLayout>

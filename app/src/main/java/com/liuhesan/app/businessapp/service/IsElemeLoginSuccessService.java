@@ -1,0 +1,26 @@
+package com.liuhesan.app.businessapp.service;
+
+
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
+import rx.Observable;
+
+
+/**
+ * Created by Tao on 2016/11/16.
+ */
+
+public interface IsElemeLoginSuccessService {
+
+    //登录
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("arena/invoke/?method=LoginService.loginByUsername")
+    Observable<String> login(@Body RequestBody body);
+    //获取新订单提醒
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("nevermore/invoke")
+    Observable<String> getData(@Query("method") String method,@Body RequestBody body);
+}
