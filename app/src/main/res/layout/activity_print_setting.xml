@@ -11,19 +11,9 @@
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:background="?attr/colorPrimary">
-        <ImageButton
-            android:id="@+id/print_setting_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@mipmap/mine_back"
-            android:padding="10dp"
-            />
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="打印设置"
-            android:textColor="@color/white" />
+            style="@style/toolbar_title"
+            android:text="打印设置" />
     </android.support.v7.widget.Toolbar>
     <com.liuhesan.app.businessapp.widget.RelativeLayoutForButton
         android:id="@+id/setting_print"
@@ -68,4 +58,19 @@
             android:layout_height="wrap_content"
             android:text="打印帮助" />
     </com.liuhesan.app.businessapp.widget.RelativeLayoutForButton>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/print"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/printbutton"
+            android:text="打印测试"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
 </LinearLayout>

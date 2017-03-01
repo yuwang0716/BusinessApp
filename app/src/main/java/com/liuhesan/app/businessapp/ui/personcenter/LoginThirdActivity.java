@@ -83,14 +83,14 @@ public class LoginThirdActivity extends AppCompatActivity {
 
             //获取uuid
             try {
-                httpCookies_meit = cookieStore.get(new URI(API.url_meituan_uuid));
+                httpCookies_meit = cookieStore.get(new URI(API.url_meituan_uuid ));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
 
             //获取登录凭证cookie
             Request<String> request_logon = NoHttp.createStringRequest(API.url_meituan_logon, RequestMethod.POST);
-            request_logon.addHeader(httpCookies_meit.get(0));
+            request_logon.addHeader("Cookie",httpCookies_meit.toString().replace("[","").replace("]","").replace(",",";"));
             request_logon.add("userName",username);
             request_logon.add("password",pwd);
             request_logon.add("imgVerifyValue","");
@@ -99,7 +99,7 @@ public class LoginThirdActivity extends AppCompatActivity {
                 @Override
                 public void onSucceed(int what, Response<String> response) {
                     super.onSucceed(what, response);
-                    Log.e(TAG,10+"\n"+ response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
+                    Log.e(TAG,10+"\n"+ response.toString());
                     try {
                         JSONObject jsonObject = new JSONObject(response.get());
                         int code = jsonObject.optInt("code");
@@ -132,19 +132,19 @@ public class LoginThirdActivity extends AppCompatActivity {
         if (title.equals("登录饿了么外卖")) {
 
             //获取uuid
-            Request<String> request_uuid = NoHttp.createStringRequest(API.url_uuid_eleme_uuid, RequestMethod.GET);
+            Request<String> request_uuid = NoHttp.createStringRequest(API.url_uuid_eleme_uuid, RequestMethod.POST);
             requestQueue.add(20, request_uuid, new SimpleResponseListener<String>() {
                 @Override
                 public void onSucceed(int what, Response<String> response) {
                     super.onSucceed(what, response);
-
                     //获取登录凭证cookie
-                    uuid_elem = response.getHeaders().getValue("X-NWS-LOG-UUID",0);
+                    uuid_elem = response.getHeaders().getValue("x-nws-log-uuid",0);
                     String json = "{\"id\":\""+uuid_elem+"\",\"method\":\"loginByUsername\",\"service\":\"LoginService\"," +
                             "\"params\":{\"username\":\""+username+"\",\"password\":\""+pwd+"\",\"captchaCode\":\"\"," +
                             "\"loginedSessionIds\":[]},\"metas\":{\"appName\":\"melody\",\"appVersion\":\"4.4.0\"},\"ncp\":\"2.0.0\"}";
                     Request<String> request_login = NoHttp.createStringRequest(API.url_eleme_logon, RequestMethod.POST);
                     request_login.setDefineRequestBodyForJson(json);
+                    Log.e(TAG, "\nonSucceed: \n"+json );
                     requestQueue.add(21, request_login, new SimpleResponseListener<String>() {
                         @Override
                         public void onSucceed(int what, Response<String> response) {
@@ -154,6 +154,7 @@ public class LoginThirdActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(response.get());
                                 uuid = jsonObject.optString("id");
                                 JSONObject result = jsonObject.optJSONObject("result");
+                                Log.e(TAG,response.get()+ "onSucceed: " );
                                 boolean succeed = result.optBoolean("succeed");
                                 if (succeed){
                                     JSONObject successData = result.optJSONObject("successData");

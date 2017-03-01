@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,11 @@ import com.liuhesan.app.businessapp.utility.HistoryOrderData;
 import com.liuhesan.app.businessapp.utility.QueryHistoryorder;
 import com.lzy.okgo.callback.StringCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -58,6 +64,7 @@ public class WaitDistributionFragment extends Fragment {
         intentFilter.addAction("com.liuhesan.app.date");
         dateReceive = new DateReceive();
         localBroadcastManager.registerReceiver(dateReceive, intentFilter);
+        users_new = new ArrayList<>();
         initData(page);
         initView();
         return view;
@@ -92,6 +99,18 @@ public class WaitDistributionFragment extends Fragment {
             @Override
             public void onSuccess(String s, Call call, Response response) {
                 Log.e(TAG, s+"onSuccess: " );
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    JSONObject countOrder = data.optJSONObject("countOrder");
+                    String price = countOrder.optString("price");
+                    String num = countOrder.optString("num");
+                    String str_data_total ="今日接单<font color='#23c0af'>"+num+"</font>单，金额<font color='#23c0af'>"+price+"</font>元";
+                    data_total.setText(Html.fromHtml(str_data_total));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                     if (distributionAdapter == null) {
                         users = HistoryOrderData.getNewOrderData(s);
                         if (users != null) {
@@ -101,8 +120,8 @@ public class WaitDistributionFragment extends Fragment {
                     } else {
                         users_new = HistoryOrderData.getNewOrderData(s);
                         if (users_new != null) {
-                            distributionAdapter = new DistributionAdapter(getContext(), users);
-                            listView.setAdapter(distributionAdapter);
+                            users.addAll(users_new);
+                            distributionAdapter.notifyDataSetChanged();
                         }
 
                     }
@@ -118,6 +137,8 @@ public class WaitDistributionFragment extends Fragment {
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+                users.clear();
+                distributionAdapter.notifyDataSetChanged();
                 page = 1;
                 initData(page);
                 refreshLayout.finishRefresh();

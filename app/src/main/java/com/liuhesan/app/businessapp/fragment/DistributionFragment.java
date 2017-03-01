@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
@@ -23,11 +25,16 @@ import com.liuhesan.app.businessapp.utility.L;
 import com.liuhesan.app.businessapp.utility.QueryHistoryorder;
 import com.lzy.okgo.callback.StringCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Response;
+
+import static com.liuhesan.app.businessapp.R.id.data_total;
 
 /**
  * Created by Tao on 2016/11/11.
@@ -46,6 +53,7 @@ public class DistributionFragment extends Fragment {
     private IntentFilter intentFilter;
     private DateReceive dateReceive;
     public int currYear,currMonth,currDay;
+    private TextView data_total;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,6 +98,18 @@ public class DistributionFragment extends Fragment {
             @Override
             public void onSuccess(String s, Call call, Response response) {
                 L.json(TAG,s);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(s);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JSONObject data = jsonObject.optJSONObject("data");
+                JSONObject countOrder = data.optJSONObject("countOrder");
+                String price = countOrder.optString("price");
+                String num = countOrder.optString("num");
+                String str_data_total ="今日接单<font color='#23c0af'>"+num+"</font>单，金额<font color='#23c0af'>"+price+"</font>元";
+                data_total.setText(Html.fromHtml(str_data_total));
                 if (distributionAdapter == null) {
                     users = HistoryOrderData.getNewOrderData(s);
                     if (users != null) {
@@ -99,8 +119,8 @@ public class DistributionFragment extends Fragment {
                 } else {
                     users_new = HistoryOrderData.getNewOrderData(s);
                     if (users_new != null) {
-                        distributionAdapter = new DistributionAdapter(getContext(), users);
-                        listView.setAdapter(distributionAdapter);
+                        users.addAll(users_new);
+                        distributionAdapter.notifyDataSetChanged();
                     }
 
                 }
@@ -111,10 +131,12 @@ public class DistributionFragment extends Fragment {
     private void initView() {
         refreshLayout = (MaterialRefreshLayout) view.findViewById(R.id.refresh);
         listView = (ListView) view.findViewById(R.id.distribution_listview);
+        data_total = (TextView) view.findViewById(R.id.data_total);
         refreshLayout.setLoadMore(true);
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+                users.clear();
                 page = 1;
                 initData(page);
                 refreshLayout.finishRefresh();

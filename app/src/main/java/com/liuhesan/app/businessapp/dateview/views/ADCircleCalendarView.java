@@ -85,6 +85,9 @@ public class ADCircleCalendarView extends LinearLayout implements View.OnClickLi
         weekView.setWeekTheme(weekTheme);
     }
 
+   public void setSelectDate(int year,int month,int day){
+        circleMonthView.setSelectDate(year,month,day);
+    }
     @Override
     public void onClick(View v) {
         int id = v.getId();

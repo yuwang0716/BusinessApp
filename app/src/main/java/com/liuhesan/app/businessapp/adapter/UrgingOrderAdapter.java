@@ -6,20 +6,32 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liuhesan.app.businessapp.R;
+import com.liuhesan.app.businessapp.bean.UrgeDetails;
 import com.liuhesan.app.businessapp.bean.User;
+import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.widget.LinearLayoutForButton;
 import com.liuhesan.app.businessapp.widget.ListViewForScrollView;
 import com.liuhesan.app.businessapp.widget.RelativeLayoutForButton;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
+import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.SimpleResponseListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +49,7 @@ import butterknife.ButterKnife;
 
 public class UrgingOrderAdapter extends BaseAdapter {
     private static final String TAG = "UrgingOrderAdapter";
-    private List<User> newOrder_data;
+    private List<User> urgeOrder_data;
     private Context mContext;
     private boolean tag = false;
     private ViewHolder mViewHolder;
@@ -47,24 +59,22 @@ public class UrgingOrderAdapter extends BaseAdapter {
     private String token;
     HashMap<Integer, View> map = new HashMap<Integer, View>();
     private RequestQueue requestQueue;
-    private List<Long> urginglists;
-
-    public UrgingOrderAdapter(Context mContext, List<User> newOrder_data, String name) {
+    private List<UrgeDetails> urgeDetailses;
+    public UrgingOrderAdapter(Context mContext, List<User> urgeOrder_data, String name) {
         this.mContext = mContext;
-        this.newOrder_data = newOrder_data;
+        this.urgeOrder_data = urgeOrder_data;
         this.name = name;
         requestQueue = NoHttp.newRequestQueue();
-        urginglists = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return newOrder_data.size();
+        return urgeOrder_data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return newOrder_data.get(position);
+        return urgeOrder_data.get(position);
     }
 
     @Override
@@ -91,46 +101,50 @@ public class UrgingOrderAdapter extends BaseAdapter {
             convertView = map.get(position);
             mViewHolder = (ViewHolder) convertView.getTag();
         }
-        mViewHolder.ordernumbertwo.setText(newOrder_data.get(position).getOrder_id());
-        mViewHolder.username.setText(newOrder_data.get(position).getUser_real_name());
-        mViewHolder.usersex.setText(newOrder_data.get(position).getSex());
-        if (newOrder_data.get(position).getUser_order_num_str().equals("0")){
-            mViewHolder.order_nums.setText("首次下单");
-        }else if (newOrder_data.get(position).getUser_order_num_str().equals("首次下单")){
-            mViewHolder.order_nums.setText("首次下单");
-        }else {
-            mViewHolder.order_nums.setText(newOrder_data.get(position).getUser_order_num_str()+"次下单");
-        }
-        mViewHolder.useraddress.setText(newOrder_data.get(position).getUser_address());
-        mViewHolder.shop_price.setText("总共" + newOrder_data.get(position).getShop_price() + "元");
-        if (name == "baidu") {
+        mViewHolder.ordernumbertwo.setText("#"+urgeOrder_data.get(position).getOrder_id());
+        mViewHolder.username.setText(urgeOrder_data.get(position).getUser_real_name());
+        mViewHolder.usersex.setText(urgeOrder_data.get(position).getSex());
+        mViewHolder.useraddress.setText(urgeOrder_data.get(position).getUser_address());
+        mViewHolder.shop_price.setText("总共" + urgeOrder_data.get(position).getShop_price() + "元");
+        mViewHolder.order_nums.setVisibility(View.GONE);
+        if (name.equals("baidu")) {
             String date = getDate(position, "yyyy/M/d HH:mm");
             int lastIndexOf = date.lastIndexOf(" ");
             String substring = date.substring(lastIndexOf);
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(date);
-        } else {
-            mViewHolder.ordertime.setText(newOrder_data.get(position).getCreate_time());
-            mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.wm_baidu));
+        } else if (name.equals("meit")){
+            mViewHolder.ordertime.setText(urgeOrder_data.get(position).getCreate_time().substring(urgeOrder_data.get(position).getCreate_time().indexOf(" ")+1)+ "下单");
+            mViewHolder.orderdata.setText(urgeOrder_data.get(position).getCreate_time());
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.wm_meituan));
+        }else {
+            mViewHolder.ordertime.setText(urgeOrder_data.get(position).getCreate_time().substring(urgeOrder_data.get(position).getCreate_time().indexOf(" ")+1)+ "下单");
+            mViewHolder.orderdata.setText(urgeOrder_data.get(position).getCreate_time());
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.wm_elem));
         }
-        mViewHolder.send_time.setText(newOrder_data.get(position).getSend_time());
+        mViewHolder.send_time.setText(urgeOrder_data.get(position).getSend_time());
 
-        mViewHolder.ordernumber_two.setText(newOrder_data.get(position).getOrder_id());
-        mViewHolder.userphone.setText(newOrder_data.get(position).getUser_phone());
-        List<Map<String, String>> goods_list = newOrder_data.get(position).getGoods_list();
+        mViewHolder.ordernumber_two.setText(urgeOrder_data.get(position).getOrder_wm_id());
+        mViewHolder.userphone.setText(urgeOrder_data.get(position).getUser_phone());
+        List<Map<String, String>> goods_list = urgeOrder_data.get(position).getGoods_list();
         GoodsAdapter mGoodsAdapter = new GoodsAdapter(mContext, goods_list);
         mViewHolder.order_content.setAdapter(mGoodsAdapter);
 
-        mViewHolder.order_meal_fee.setText(newOrder_data.get(position).getOrder_meal_fee_price());
-        mViewHolder.shipping_fee.setText(newOrder_data.get(position).getTakeout_cost_price());
-        mViewHolder.shop_other_discount.setText(newOrder_data.get(position).getShop_other_discount_price());
-        mViewHolder.totalPrice.setText(newOrder_data.get(position).getShop_price());
-        mViewHolder.caution.setText(newOrder_data.get(position).getCaution());
+        mViewHolder.order_meal_fee.setText(urgeOrder_data.get(position).getOrder_meal_fee_price());
+        mViewHolder.shipping_fee.setText(urgeOrder_data.get(position).getTakeout_cost_price());
+        mViewHolder.shop_other_discount.setText(urgeOrder_data.get(position).getShop_other_discount_price());
+        mViewHolder.totalPrice.setText(urgeOrder_data.get(position).getShop_price());
+        mViewHolder.caution.setText(urgeOrder_data.get(position).getCaution());
 
-        urginglists = newOrder_data.get(position).getRemind_list();
-        if (urginglists != null){
-            UrgsAdapter urgsAdapter = new UrgsAdapter(mContext, urginglists);
+        urgeDetailses = urgeOrder_data.get(position).getRemind_list();
+        if (urgeDetailses != null){
+            UrgsAdapter urgsAdapter = new UrgsAdapter(mContext, urgeDetailses,"baidu");
             mViewHolder.urginglist.setAdapter(urgsAdapter);
+        }
+        if (name== "meit"){
+            getData(position,mViewHolder.urginglist);
+
         }
 
         //美团操作订单的一些参数
@@ -159,7 +173,7 @@ public class UrgingOrderAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel://" + newOrder_data.get(position).getUser_phone()));
+                intent.setData(Uri.parse("tel://" + urgeOrder_data.get(position).getUser_phone()));
                 mContext.startActivity(intent);
             }
         });
@@ -228,9 +242,42 @@ public class UrgingOrderAdapter extends BaseAdapter {
 
     }
 
+    private void getData(int position, ListViewForScrollView urginglist) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
+        String cookie = sharedPreferences.getString("cookie", "");
+        Request<String> request = NoHttp.createStringRequest(API.url_meituan_reminder_times, RequestMethod.GET);
+        request.addHeader("Cookie",cookie);
+        request.add("orderInfos","[{wmOrderId:"+urgeOrder_data.get(position).getOrder_self_id()+
+                ",wmPoiId:"+urgeOrder_data.get(position).getWmPoiId()+"}]");
+        requestQueue.add(0, request, new SimpleResponseListener<String>() {
+            @Override
+            public void onSucceed(int what, Response<String> response) {
+                super.onSucceed(what, response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response.get());
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    JSONArray jsonArray = data.optJSONArray(urgeOrder_data.get(position).getOrder_wm_id());
+                    urgeDetailses = new ArrayList<UrgeDetails>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject reason = jsonArray.optJSONObject(i);
+                        UrgeDetails urgeDetails = new UrgeDetails();
+                        urgeDetails.setReminder_time(reason.optString("reminder_time_fmt"));
+                        urgeDetails.setResponse_content(reason.optString("response_content"));
+                        urgeDetails.setResponse_time(reason.optString("response_time"));
+                        urgeDetailses.add(urgeDetails);
+                    }
+                    UrgsAdapter urgsAdapter = new UrgsAdapter(mContext, urgeDetailses,"meit");
+                    urginglist.setAdapter(urgsAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     private String getDate(int position, String formatType) {
-        long i = Integer.parseInt(newOrder_data.get(position).getCreate_time());
+        long i = Integer.parseInt(urgeOrder_data.get(position).getCreate_time());
         SimpleDateFormat sdf = new SimpleDateFormat(formatType);
         Date dt = new Date(i * 1000);
         String mDateTime = sdf.format(dt);
@@ -254,6 +301,8 @@ public class UrgingOrderAdapter extends BaseAdapter {
         }
     }
     static class ViewHolder {
+        @BindView(R.id.logo)
+        ImageView logo;
         @BindView(R.id.ordernumbertwo)
         TextView ordernumbertwo;
         @BindView(R.id.username)

@@ -6,10 +6,19 @@ package com.liuhesan.app.businessapp.utility;
 
 public class API {
     //系统登录
-    public static final String url_login = "http://crm.weidab.cn/Rest/";
-    public static final String url_system_neworder = API.url_login+"order/newOrder";
-    public static final String url_system_shopstatus = API.url_login+"order/setShopStatus";
-    public static final String url_system_shopdetails = API.url_login+"user/getShopinfo";
+    public static final String url_base = "http://crm.weidab.cn/Rest/";
+    public static final String url_login = url_base+ "user/login";
+    public static final String url_login_wm = url_base+"user/login_wm";
+    public static final String url_system_neworder = API.url_base+"order/newOrder";
+    public static final String url_system_shopstatus = API.url_base+"order/setShopStatus";
+    public static final String url_system_shopdetails = API.url_base+"user/getShopinfo";
+    public static final String url_system_phone = API.url_base+"user/updatePhone";
+    public static final String url_system_photo = API.url_base+"user/updatePic";
+    public static final String url_system_auto = API.url_base+"order/autoConfirm";
+    public static final String url_system_SMS = API.url_base+"order/authMobile";
+    public static final String url_system_findPwd = API.url_base+"order/findPassword";
+    public static final String url_system_wmCommit = API.url_base+"user/login_wm";
+    public static final String url_system_statistics = API.url_base+"order/countDay";
 
     //百度外卖
     public static final String url_baidu = "https://wmpass.baidu.com/";
@@ -34,13 +43,15 @@ public class API {
     public static final String url_meituan_data = url_meituan_base +"receive/unprocessed/r/ofq?time=";
     public static final String url_meituan_reminder = url_meituan_base+"customer/reminder/unprocessed/r/count";
     public static final String url_meituan_reminder_details = url_meituan_base+"customer/reminder/unprocessed/list?pageNum=1";
+    public static final String url_meituan_reminder_times = url_meituan_base+"customer/reminder/list";
     public static final String url_meituan_refund = url_meituan_base+"history/r/refundOrderCount/notify";
     public static final String url_meituan_refund_details = url_meituan_base+"refund/unprocessed/r/query?getNewVo=1&pageNum=1";
+
 
     //饿了么外卖
     public static final String url_uuid_eleme = "http://melody.shop.ele.me/eleme/";
     public static final String url_eleme = "https://app-api.shop.ele.me/";
-    public static final String url_uuid_eleme_uuid = url_uuid_eleme+"napos.picto.melody/login";
+    public static final String url_uuid_eleme_uuid = "http://m.ele.me/place";
     public static final String url_eleme_shopstatus = url_eleme+"shop/invoke/?method=";
     public static final String url_eleme_logon = url_eleme+"arena/invoke/?method=LoginService.loginByUsername";
     public static final String url_eleme_notification = url_eleme+"nevermore/invoke/?method=PollingService.pollingForHighFrequency";

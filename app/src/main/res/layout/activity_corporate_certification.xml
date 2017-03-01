@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_corporate_certification"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.CorporateCertificationActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/corporate_certification_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="?attr/colorPrimary">
+        <TextView
+            android:text="法人身份证"
+            style="@style/toolbar_title"/>
+        <TextView
+            android:id="@+id/keep"
+            android:text="保存"
+            style="@style/toolbar_keep" />
+    </android.support.v7.widget.Toolbar>
+    <RelativeLayout
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="执照上传"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/corporate_certification_photo"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@mipmap/business_license_camera"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+    <!--分割线-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/firstline_color"/>
+    <LinearLayout
+        style="@style/mine_style_layout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="身份证号"
+            android:textSize="18sp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写"
+            android:gravity="right"
+            android:background="@null"
+            android:textColorHint="@color/colorFragment"/>
+    </LinearLayout>
+</LinearLayout>

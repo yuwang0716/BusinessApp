@@ -160,6 +160,7 @@ public class RefundorderFragment extends Fragment {
             @Override
             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                 super.onSucceed(what, response);
+                Log.e(TAG,"饿了么退单：\n"+response.get()+ "onSucceed: ");
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response.get());
@@ -177,7 +178,7 @@ public class RefundorderFragment extends Fragment {
                             @Override
                             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                                 super.onSucceed(what, response);
-                                L.e("饿了么催单详情：\n"+response.get());
+                                L.e("饿了么退单详情：\n"+response.get());
                             }
                         });
                     }

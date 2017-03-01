@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_new_pwd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.NewPwdActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/newpwd_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:paddingTop="20dp">
+
+        <TextView
+            android:text="新密码"
+            style="@style/toolbar_title" />
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/newpwd_pwd_first"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="输入新密码"
+            android:paddingBottom="10dp"
+            android:paddingLeft="40dp"
+            android:paddingTop="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white" />
+
+
+        <EditText
+            android:id="@+id/newpwd_pwd_second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="请再次输入"
+            android:lines="1"
+            android:paddingBottom="10dp"
+            android:paddingLeft="40dp"
+            android:paddingTop="10dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/newpwd_finish"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/surebutton"
+        android:text="完成"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+</LinearLayout>

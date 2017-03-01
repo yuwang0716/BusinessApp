@@ -2,19 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="@mipmap/default_personal_image"/>
+    android:background="@mipmap/login_bg">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="180dp"
         android:orientation="vertical"
         android:background="@drawable/login_edittext">
         <EditText
@@ -22,14 +17,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/login_username_hint"
-            android:textColorHint="@color/firsttext_color"/>
+            android:textColorHint="@color/firsttext_color"
+            android:drawableLeft="@mipmap/login_name"
+            android:drawablePadding="10dp"/>
         <EditText
             android:id="@+id/login_userpwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:hint="@string/login_userpwd_hint"
-            android:textColorHint="@color/firsttext_color"/>
+            android:drawableLeft="@mipmap/login_pwd"
+            android:textColorHint="@color/firsttext_color"
+            android:drawablePadding="10dp"/>
 
     </LinearLayout>
     <LinearLayout
@@ -40,8 +39,8 @@
         <CheckBox
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:background="@drawable/login_checkbox"
-            android:duplicateParentState="false" />
+            android:background="@drawable/checkbox_login"
+            style="@style/LoginCheckBox" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +64,37 @@
        android:text="@string/login_button"
        android:textColor="@color/white"
        android:textSize="30dp"/>
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp">
+        <CheckBox
+            android:id="@+id/remember_pwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="@color/white"
+            android:paddingBottom="10dp"
+            style="@style/LoginCheckBox"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="记住密码"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/remember_pwd"
+            />
+        <TextView
+            android:id="@+id/forget_pwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:clickable="true"
+            android:text="忘记密码"/>
+    </RelativeLayout>
 
 </LinearLayout>

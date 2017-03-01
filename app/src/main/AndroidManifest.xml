@@ -13,16 +13,19 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
-        android:name="com.liuhesan.app.businessapp.utility.MyApplication"
+        android:name=".utility.MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon_logo"
         android:label="味点"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.WelcomeActivity"
+            android:name=".ui.personcenter.WelcomeActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/splash">
@@ -33,19 +36,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.LoginActivity"
+            android:name=".ui.personcenter.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.MainActivity"
+            android:name=".ui.personcenter.MainActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.RunningstateActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.RunningstateActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.LoginBaiduActivity"
+            android:name=".ui.personcenter.LoginBaiduActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.FloatActivity"
@@ -54,21 +58,70 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </activity>
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.LoginThirdActivity"
+            android:name=".ui.personcenter.LoginThirdActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.PrintSettingActivity"
+            android:name=".ui.personcenter.PrintSettingActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.liuhesan.app.businessapp.ui.personcenter.BluetoothPrintActivity"
+            android:name=".ui.personcenter.BluetoothPrintActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
-        <activity android:name="com.liuhesan.app.businessapp.ui.personcenter.MystoreActivity"
+        <activity
+            android:name=".ui.personcenter.MystoreActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.liuhesan.app.businessapp.ui.personcenter.WelcomeGuideActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.WelcomeGuideActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.WorkTimeActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.AutoGetOrderActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.ForgetPwdActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.NewPwdActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.RemindSettingActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.SmsManagerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.CertificationBusinessActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.BusinessLicenseActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.SpecialCertificationActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.CorporateCertificationActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.personcenter.SafeSettingActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.personcenter.ChangePwdActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"/>
     </application>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_work_time"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.WorkTimeActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="?attr/colorPrimary">
+        <ImageButton
+            android:id="@+id/worktime_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/mine_back"
+            android:padding="10dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="营业时间"
+            android:textSize="18sp"
+            android:textColor="@color/white" />
+    </android.support.v7.widget.Toolbar>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="自定义营业时间段"/>
+    <TextView
+        android:id="@+id/worktime_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white" />
+    
+    <TextView
+        android:id="@+id/worktime_add"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white" />
+</LinearLayout>

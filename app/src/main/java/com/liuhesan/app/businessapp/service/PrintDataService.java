@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 public class PrintDataService {
@@ -143,7 +144,8 @@ public class PrintDataService {
                     System.out.println("关闭适配器！");
                     this.bluetoothAdapter.isDiscovering();
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
+                Log.e("连接失败", outputStream+"connect: ",e );
                 Toast.makeText(this.context, "连接失败！", Toast.LENGTH_SHORT).show();
                 return false;
             }

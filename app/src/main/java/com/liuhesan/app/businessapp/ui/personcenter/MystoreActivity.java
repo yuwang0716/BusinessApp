@@ -10,9 +10,10 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -21,9 +22,20 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.liuhesan.app.businessapp.R;
+import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.AppManager;
 import com.liuhesan.app.businessapp.utility.ImageUtils;
+import com.liuhesan.app.businessapp.widget.CircleImageView;
 import com.liuhesan.app.businessapp.widget.RelativeLayoutForButton;
+import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.rest.Request;
+import com.yolanda.nohttp.rest.RequestQueue;
+import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.SimpleResponseListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -34,10 +46,8 @@ import butterknife.OnClick;
 
 public class MystoreActivity extends AppCompatActivity {
     private final static String TAG = " MystoreActivity";
-    @BindView(R.id.mystore_back)
-    ImageButton mystoreBack;
     @BindView(R.id.mystore_head)
-    com.liuhesan.app.businessapp.widget.CircleImageView mystoreHead;
+    CircleImageView mystoreHead;
     @BindView(R.id.mystore_username)
     TextView tv_mystoreUsername;
     @BindView(R.id.mystore_qualification)
@@ -52,27 +62,43 @@ public class MystoreActivity extends AppCompatActivity {
     RelativeLayoutForButton rl_mystoreShopPhone;
     @BindView(R.id.mystore_shop_phone)
     TextView tv_mystore_shop_phone;
+    @BindView(R.id.mystore_toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.certificate_business)
+    TextView certificateBusiness;
     private int certificationID, qualification;
     private String mystoreUsername, mystoreShopAddress, mystore_name, mystore_shop_phone;
     private Bitmap bitmap;
     private Intent intent;
     private LocalBroadcastManager localBroadcastManager;
     private String url;
+    private RequestQueue requestQueue;
+    private Request<String> request_updatePhone, request_updatePhoto;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mystore);
-        localBroadcastManager = LocalBroadcastManager.getInstance(MystoreActivity.this);
         AppManager.getAppManager().addActivity(MystoreActivity.this);
         ButterKnife.bind(this);
+        localBroadcastManager = LocalBroadcastManager.getInstance(MystoreActivity.this);
+        requestQueue = NoHttp.newRequestQueue();
+        sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         initData();
 
     }
 
     private void initData() {
+        mToolbar.setNavigationIcon(R.mipmap.mine_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
-        mystoreUsername = sharedPreferences.getString("username", "");
+        mystoreUsername = sharedPreferences.getString("shop_name", "");
         tv_mystoreUsername.setText(mystoreUsername);
         certificationID = sharedPreferences.getInt("certificationID", 0);
         Drawable drawable = getResources().getDrawable(R.mipmap.mine_phone_verification);
@@ -96,7 +122,7 @@ public class MystoreActivity extends AppCompatActivity {
         tv_mystore_name.setText(mystore_name);
         mystoreShopAddress = sharedPreferences.getString("address", "");
         tv_mystoreShopAddress.setText(mystoreShopAddress);
-        mystore_shop_phone = sharedPreferences.getString("standby_tel", "");
+        mystore_shop_phone = sharedPreferences.getString("phone", "");
         tv_mystore_shop_phone.setText(mystore_shop_phone);
         url = sharedPreferences.getString("headportrait", "");
         Glide.with(MystoreActivity.this).load(url)
@@ -112,17 +138,17 @@ public class MystoreActivity extends AppCompatActivity {
                 });
     }
 
-    @OnClick({R.id.mystore_back, R.id.mystore_head, R.id.rl_mystore_shop_phone})
+    @OnClick({R.id.mystore_head, R.id.rl_mystore_shop_phone,R.id.certificate_business})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.mystore_back:
-                finish();
-                break;
             case R.id.mystore_head:
                 ImageUtils.takeOrChoosePhoto(MystoreActivity.this, ImageUtils.TAKE_OR_CHOOSE_PHOTO);
                 break;
             case R.id.rl_mystore_shop_phone:
                 showDialog("订餐电话");
+                break;
+            case R.id.certificate_business:
+                startActivity(new Intent(MystoreActivity.this,CertificationBusinessActivity.class));
                 break;
         }
     }
@@ -144,7 +170,27 @@ public class MystoreActivity extends AppCompatActivity {
                 if (title.equals("店名")) {
                     tv_mystore_name.setText(editText.getText().toString().trim());
                 } else {
-                    tv_mystore_shop_phone.setText(editText.getText().toString().trim());
+                    request_updatePhone = NoHttp.createStringRequest(API.url_system_phone, RequestMethod.POST);
+                    request_updatePhone.add("token", sharedPreferences.getString("token", ""));
+                    request_updatePhone.add("phone", editText.getText().toString().trim());
+                    requestQueue.add(0, request_updatePhone, new SimpleResponseListener<String>() {
+                        @Override
+                        public void onSucceed(int what, Response<String> response) {
+                            super.onSucceed(what, response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.get());
+                                int errno = jsonObject.optInt("errno");
+                                if (errno == 200) {
+                                    tv_mystore_shop_phone.setText(editText.getText().toString().trim());
+                                    SharedPreferences.Editor edit = sharedPreferences.edit();
+                                    edit.putString("phone", editText.getText().toString().trim()).commit();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Log.e(TAG, response.get() + "onSucceed: ");
+                        }
+                    });
                 }
             }
         });
@@ -170,6 +216,25 @@ public class MystoreActivity extends AppCompatActivity {
                 //获取到剪裁后的图片
                 bitmap = ImageUtils.getCroppedImage();
                 File file = ImageUtils.saveImage(bitmap);
+                request_updatePhoto = NoHttp.createStringRequest(API.url_system_photo, RequestMethod.POST);
+                request_updatePhoto.add("token", sharedPreferences.getString("token", ""));
+                request_updatePhoto.add("head", file);
+                requestQueue.add(1, request_updatePhoto, new SimpleResponseListener<String>() {
+                    @Override
+                    public void onSucceed(int what, Response<String> response) {
+                        super.onSucceed(what, response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.get());
+                            int errno = jsonObject.optInt("errno");
+                            if (errno == 200) {
+                                SharedPreferences.Editor edit = sharedPreferences.edit();
+                                edit.putString("headportrait", file.getAbsolutePath()).commit();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 Glide.with(MystoreActivity.this).load(file)
                         .placeholder(R.mipmap.default_personal_image)
                         .error(R.mipmap.default_personal_image)

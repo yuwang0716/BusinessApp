@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_remind_setting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.RemindSettingActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/remindSetting_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="?attr/colorPrimary">
+        <TextView
+            android:text="提示设置"
+            style="@style/toolbar_title"/>
+    </android.support.v7.widget.Toolbar>
+    <RelativeLayout
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="新消息的通知"
+            android:layout_centerVertical="true"/>
+        <Switch
+            android:id="@+id/remindSetting_news"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            />
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorFragment" />
+    <RelativeLayout
+        android:id="@+id/rl_sound"
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="声音"
+            android:layout_centerVertical="true"/>
+
+        <Switch
+            android:id="@+id/remindSetting_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorFragment" />
+
+    <RelativeLayout
+        android:id="@+id/rl_shake"
+        style="@style/mine_style_layout"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="震动"
+            android:layout_centerVertical="true"/>
+
+        <Switch
+            android:id="@+id/remindSetting_shake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+</LinearLayout>

@@ -3,6 +3,7 @@ package com.liuhesan.app.businessapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -123,9 +125,15 @@ public class NewOrderAdapter extends BaseAdapter {
             String substring = date.substring(lastIndexOf);
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(date);
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_baidu));
+        }else if (name == "meit"){
+            mViewHolder.ordertime.setText(newOrder_data.get(position).getCreate_time());
+            mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_meituan));
         }else {
             mViewHolder.ordertime.setText(newOrder_data.get(position).getCreate_time());
             mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
+            mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_eleme));
         }
         mViewHolder.send_time.setText(newOrder_data.get(position).getSend_time());
 
@@ -407,6 +415,8 @@ public class NewOrderAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
+        @BindView(R.id.logo)
+        ImageView logo;
         @BindView(R.id.ordernumbertwo)
         TextView ordernumbertwo;
         @BindView(R.id.username)

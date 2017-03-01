@@ -55,6 +55,7 @@
         android:layout_height="wrap_content">
 
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +68,7 @@
             android:layout_height="wrap_content"
             android:text="确认"
             android:textColor="@color/white"
-            android:background="@drawable/nowbutton"
+            android:background="@drawable/surebutton"
             />
     </RelativeLayout>
 </LinearLayout>

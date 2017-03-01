@@ -1,8 +1,10 @@
 package com.liuhesan.app.businessapp.fragment;
 
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -21,22 +24,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.liuhesan.app.busineresponse.getsapp.ui.personcenter.LoginBaiduActivity;
 import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.http.HttpMethods;
 import com.liuhesan.app.businessapp.ui.personcenter.LoginActivity;
-import com.liuhesan.app.businessapp.ui.personcenter.LoginBaiduActivity;
 import com.liuhesan.app.businessapp.ui.personcenter.LoginThirdActivity;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.AppManager;
+import com.liuhesan.app.businessapp.widget.CircleImageView;
 import com.liuhesan.app.businessapp.widget.NoScrollViewPager;
 import com.liuhesan.app.businessapp.widget.RelativeLayoutForButton;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
+import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.SimpleResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,6 +109,12 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     RadioGroup shopstatus;
     @BindView(R.id.exit_login)
     ImageButton exit_login;
+    @BindView(R.id.shopName)
+    TextView shopName;
+    @BindView(R.id.closeshop)
+    RadioButton closeshop;
+    @BindView(R.id.first_headphoto)
+    CircleImageView firstHeadphoto;
     private View view;
     private List<Fragment> mFragments;
     private FragmentPagerAdapter mAdapter;
@@ -119,6 +138,11 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     private String shopId;
     private String wmPoiId;
     private String token_meit;
+    private String url;
+    private LocalBroadcastManager localBroadcastManager;
+    private IntentFilter intentFilter;
+    private HeadPhotoReceive headPhotoReceive;
+    private Request<String> request_login;
 
     @Nullable
     @Override
@@ -127,6 +151,13 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         unbinder = ButterKnife.bind(this, view);
         requestQueue = NoHttp.newRequestQueue();
         request_shop = NoHttp.createStringRequest(API.url_system_shopstatus, RequestMethod.POST);
+
+        //获取头像
+        localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("com.liuhesan.app.HEAD");
+        headPhotoReceive = new HeadPhotoReceive();
+        localBroadcastManager.registerReceiver(headPhotoReceive, intentFilter);
         getCookie();
         initView();
         initAdapter();
@@ -139,13 +170,13 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
         token = sharedPreferences.getString("token", "");
         //百度登录凭证
         sharedPreferences_baidu = mContext.getSharedPreferences("baiducookie", Context.MODE_PRIVATE);
-        cookie_baidu = sharedPreferences.getString("cookie","");
+        cookie_baidu = sharedPreferences.getString("cookie", "");
         //美团登录凭证
         sharedPreferences_meit = mContext.getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
         cookie_meit = sharedPreferences.getString("cookie", "");
-        if (!TextUtils.isEmpty(cookie_meit)){
-            wmPoiId = cookie_meit.substring(cookie_meit.indexOf("wmPoiId=")+1,cookie_meit.indexOf(";"));
-            token_meit = cookie_meit.substring(cookie_meit.indexOf("token=")+1,cookie_meit.indexOf(";"));
+        if (!TextUtils.isEmpty(cookie_meit)) {
+            wmPoiId = cookie_meit.substring(cookie_meit.indexOf("wmPoiId=") + 1, cookie_meit.indexOf(";"));
+            token_meit = cookie_meit.substring(cookie_meit.indexOf("token=") + 1, cookie_meit.indexOf(";"));
         }
         //饿了么登录凭证
         sharedPreferences_elem = mContext.getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
@@ -179,6 +210,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
     //初始化控件
     private void initView() {
+
         //店铺状态一键开关三方平台
        /* shopstatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -312,7 +344,20 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
             return true;
         });
         //DrawerLayout中toolbar
-        drawerToolbar.setLogo(R.mipmap.default_personal_image);
+        url = sharedPreferences.getString("headportrait", "");
+        Log.e(TAG, url + "onResourceReady: ");
+        Glide.with(FirstFragment.this).load(url)
+                .placeholder(R.mipmap.default_personal_image)
+                .error(R.mipmap.default_personal_image)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        firstHeadphoto.setImageDrawable(resource);
+                    }
+                });
+        shopName.setText(sharedPreferences.getString("shop_name", ""));
         mViewpager.setNoScroll(true);
 
         NeworderFragment mNeworderFragment = new NeworderFragment();
@@ -324,24 +369,18 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
     //PC端是否登陆
     private void getLogin(String name) {
-
-        HttpMethods.getInstance(getContext()).thirdLoginSuccess(API.url_login, name, token, new Subscriber<String>() {
+        request_login = NoHttp.createStringRequest(API.url_login_wm, RequestMethod.POST);
+        request_login.add("platform",name);
+        request_login.add("token",token);
+        requestQueue.add(1, request_login, new SimpleResponseListener<String>() {
             @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String s) {
+            public void onSucceed(int what, Response<String> response) {
+                super.onSucceed(what, response);
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(response.get());
                     int errno = jsonObject.optInt("errno");
                     if (errno == 200) {
+                        Log.e(TAG, response.get()+"onNext: " );
                         JSONObject data = jsonObject.optJSONObject("data");
                         JSONObject info = data.optJSONObject("info");
                         String cookies = info.optString("cookies");
@@ -371,25 +410,26 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @OnClick({R.id.neworder, R.id.remind, R.id.door_baidu, R.id.door_meituan, R.id.door_eleme, R.id.door_weidian,R.id.exit_login})
+    @OnClick({R.id.neworder, R.id.remind, R.id.door_baidu, R.id.door_meituan, R.id.door_eleme, R.id.door_weidian, R.id.exit_login})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.neworder:
                 mViewpager.setCurrentItem(0);
-                neworder.setBackground(getContext().getDrawable(R.drawable.neworderbutton));
-                remind.setBackground(getContext().getDrawable(R.drawable.remindbutton));
+                neworder.setBackground(mContext.getDrawable(R.drawable.neworderbutton));
+                remind.setBackground(mContext.getDrawable(R.drawable.remindbutton));
 
                 neworder.setTextColor(getResources().getColor(R.color.colorPrimary));
                 remind.setTextColor(getResources().getColor(R.color.white));
                 break;
             case R.id.remind:
                 mViewpager.setCurrentItem(1);
-                neworder.setBackground(getContext().getDrawable(R.drawable.neworderbuttontwo));
-                remind.setBackground(getContext().getDrawable(R.drawable.remindbuttontwo));
+                neworder.setBackground(mContext.getDrawable(R.drawable.neworderbuttontwo));
+                remind.setBackground(mContext.getDrawable(R.drawable.remindbuttontwo));
 
                 neworder.setTextColor(getResources().getColor(R.color.white));
                 remind.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -437,12 +477,12 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     firstElemeOpen.setVisibility(View.GONE);
                     firstElemeClose.setVisibility(View.VISIBLE);
                     isSuccsess_elem = false;
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("elemecookie", Context.MODE_APPEND);
+                    SharedPreferences sharedPreferences = mContext.getSharedPreferences("elemecookie", Context.MODE_APPEND);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
                     editor.commit();
                 } else {
-                    Intent intent = new Intent(getActivity(), LoginThirdActivity.class);
+                    Intent intent = new Intent(mContext, LoginThirdActivity.class);
                     intent.putExtra("title", "登录饿了么外卖");
                     startActivityForResult(intent, 30);
                 }
@@ -463,9 +503,9 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 sharedPreferences_baidu.edit().clear().commit();
                 sharedPreferences_meit.edit().clear().commit();
                 sharedPreferences_elem.edit().clear().commit();
-                startActivity(new Intent(mContext,LoginActivity.class));
+                startActivity(new Intent(mContext, LoginActivity.class));
                 AppManager.getAppManager().finishAllActivity();
-                NotificationManager manger = (NotificationManager)mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+                NotificationManager manger = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
                 manger.cancelAll();
                 break;
         }
@@ -475,6 +515,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        localBroadcastManager.unregisterReceiver(headPhotoReceive);
     }
 
     @Override
@@ -511,25 +552,53 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
     }
 
     private void commitThird(Intent data, String thirdName, String platform) {
-        sharedPreferences = getContext().getSharedPreferences(thirdName + "cookie", Context.MODE_APPEND);
+        sharedPreferences = mContext.getSharedPreferences(thirdName + "cookie", Context.MODE_APPEND);
         String cookie = sharedPreferences.getString("cookie", "");
+        Request<String> request_wmCommit = NoHttp.createStringRequest(API.url_system_wmCommit, RequestMethod.POST);
+        request_wmCommit.add("token", token);
+        request_wmCommit.add("platform", platform);
+        request_wmCommit.add("username", data.getStringExtra("name"));
+        request_wmCommit.add("password", data.getStringExtra("pwd"));
+        request_wmCommit.add("cookies", cookie);
+        requestQueue.add(2, request_wmCommit, new SimpleResponseListener<String>() {
+            @Override
+            public void onSucceed(int what, Response<String> response) {
+                super.onSucceed(what, response);
+                Log.i("TAGcommitThird", response.get() + "onNext: ");
+            }
+        });
+    }
 
-        HttpMethods.getInstance(getContext()).commitThirdLogin(API.url_login, platform, token,
-                data.getStringExtra("name"), data.getStringExtra("pwd"), cookie, new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
+    class NotificationReceive extends BroadcastReceiver {
 
-                    }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String notification = intent.getStringExtra("notification");
+            if (!TextUtils.isEmpty(notification)) {
+                if (notification.equals("notification")) {
+                    mViewpager.setCurrentItem(0);
+                }
+            }
+        }
+    }
+    class HeadPhotoReceive extends BroadcastReceiver {
 
-                    @Override
-                    public void onError(Throwable e) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
-                    }
+            url = intent.getStringExtra("headportrait");
+            Glide.with(FirstFragment.this).load(url)
+                    .placeholder(R.mipmap.default_personal_image)
+                    .error(R.mipmap.default_personal_image)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(new SimpleTarget<GlideDrawable>() {
+                        @Override
+                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            firstHeadphoto.setImageDrawable(resource);
+                        }
+                    });
 
-                    @Override
-                    public void onNext(String s) {
-                        Log.i("TAGcommitThird", s + "onNext: ");
-                    }
-                });
+        }
     }
 }

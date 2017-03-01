@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorFragment"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -17,33 +18,39 @@
                 android:src="@mipmap/default_personal_image"
                 android:id="@+id/circle_image"
                 android:layout_width="70dp"
-                android:layout_height="70dp" />
+                android:layout_height="70dp"
+                android:layout_marginTop="10dp"/>
             <TextView
+                android:id="@+id/shopName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="账户昵称"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
                 android:textSize="18dp"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal">
                 <TextView
-                    android:id="@+id/mine_enterprise_verification"
+                    android:id="@+id/mine_qualification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:drawableLeft="@mipmap/mine_phone_verification"
-                    android:text="  资质认证" />
+                    android:text="  资质认证"
+                    android:textColor="@color/white"/>
                 <TextView
-                    android:id="@+id/mine_phone_verification"
+                    android:id="@+id/mine_certificationID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="10dp"
                     android:drawableLeft="@mipmap/mine_phone_verification"
-                    android:text="  身份证认证" />
+                    android:text="  身份证认证"
+                    android:textColor="@color/white"/>
             </LinearLayout>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +61,7 @@
 
         <TextView
             android:id="@+id/todayincome"
-            style="@style/mine_stylefirst" />
+            style="@style/mine_statistics" />
 
         <TextView
             android:layout_width="1dp"
@@ -64,7 +71,7 @@
 
         <TextView
             android:id="@+id/efficacyorder"
-            style="@style/mine_stylefirst" />
+            style="@style/mine_statistics" />
         <TextView
             android:layout_width="1dp"
             android:layout_height="match_parent"
@@ -72,8 +79,9 @@
             android:background="@color/firstline_color" />
         <TextView
             android:id="@+id/loseefficacyorder"
-            style="@style/mine_stylefirst" />
+            style="@style/mine_statistics" />
     </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

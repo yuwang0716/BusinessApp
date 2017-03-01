@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -141,7 +142,7 @@ public class OrderFragment extends Fragment{
 
                 if (day>0){
                     if (day <= currDay && month == currMonth && year == currYear || month <currMonth && year == currYear || year <currYear){
-                        date.setText(" "+day);
+                        OrderFragment.this.date.setText(" "+day);
                         Intent intent = new Intent("com.liuhesan.app.date");
                         intent.putExtra("date",year+"-"+month+"-"+day);
                         localBroadcastManager.sendBroadcastSync(intent);

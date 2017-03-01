@@ -4,24 +4,38 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="15dp">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp">
         <TextView
             android:id="@+id/urgingtimes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginLeft="-8dp"
             android:text="第一次催单"
+            android:textSize="11sp"
             android:drawableLeft="@mipmap/first_remind_bugle"
             android:textColor="@color/first_urge_color"
             android:background="@drawable/urge_bugle" />
 
+        <TextView
+            android:id="@+id/urgingtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="  时间  02:58:12"
+            android:textSize="11sp"
+            android:textColor="@color/first_urge_color"/>
+    </LinearLayout>
+
             <TextView
-                android:id="@+id/urgingtime"
+                android:id="@+id/reason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:drawableLeft="@mipmap/first_item_time"
-                android:text="  时间  02:58:12"/>
-
+                android:text="商家回复："
+                android:textSize="11sp"
+                android:layout_marginBottom="5dp"
+                android:lineSpacingExtra="8dp"/>
 </LinearLayout>

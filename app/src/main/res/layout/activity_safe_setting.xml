@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_safe_setting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.personcenter.SafeSettingActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/safe_setting_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:paddingTop="20dp">
+
+        <TextView
+            android:text="安全设置"
+            style="@style/toolbar_title" />
+    </android.support.v7.widget.Toolbar>
+    <TextView
+        android:id="@+id/changepwd"
+        android:layout_marginTop="16dp"
+        style="@style/mine_style_layout"
+        android:text="修改密码"
+        android:drawableRight="@mipmap/icon_mine_details"/>
+    <!--分割线-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/firstline_color"/>
+    <TextView
+        android:id="@+id/certificate_phone"
+        style="@style/mine_style_layout"
+        android:text="手机认证"
+        android:drawableRight="@mipmap/icon_mine_details"/>
+</LinearLayout>

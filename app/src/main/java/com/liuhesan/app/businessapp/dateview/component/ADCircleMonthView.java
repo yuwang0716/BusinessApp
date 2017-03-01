@@ -161,4 +161,9 @@ public class ADCircleMonthView extends MonthView {
     protected void createTheme() {
         theme = new ADCircleDayTheme();
     }
+
+    @Override
+    public void setSelectDate(int year, int month, int day) {
+        super.setSelectDate(year, month, day);
+    }
 }

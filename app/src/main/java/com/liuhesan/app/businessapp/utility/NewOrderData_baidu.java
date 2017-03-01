@@ -1,5 +1,6 @@
 package com.liuhesan.app.businessapp.utility;
 
+import com.liuhesan.app.businessapp.bean.UrgeDetails;
 import com.liuhesan.app.businessapp.bean.User;
 
 import org.json.JSONArray;
@@ -36,7 +37,8 @@ public class NewOrderData_baidu {
                     JSONObject shop_other_discount = order_list_data.optJSONObject("shop_other_discount");
 
 
-                    user.setOrder_id(order_basic.optString("order_id"));
+                    user.setOrder_id(order_basic.optString("order_index"));
+                    user.setOrder_wm_id(order_basic.optString("order_id"));
                     user.setUser_real_name(order_basic.optString("user_real_name"));
                     user.setSex(order_basic.optString("sex"));
                     user.setUser_phone(order_basic.optString("user_phone"));
@@ -62,12 +64,15 @@ public class NewOrderData_baidu {
                     }
                     //催单次数
                     JSONArray order_remind = order_basic.optJSONArray("remind_list");
-                    List<Long> remind_list = new ArrayList<>();
-                    if (remind_list != null) {
+                    List<UrgeDetails> remind_list = new ArrayList<>();
+                    if (order_remind != null) {
                         for (int k = 0; k < order_remind.length(); k++) {
                             JSONObject order_reminds = order_remind.optJSONObject(k);
-                            long create_time = order_reminds.optLong("create_time");
-                            remind_list.add(create_time);
+                            UrgeDetails urgeDetails = new UrgeDetails();
+                            urgeDetails.setReminder_time(order_reminds.optString("create_time"));
+                            urgeDetails.setResponse_time(order_reminds.optString("reply_time"));
+                            urgeDetails.setResponse_content(order_reminds.optString("reply_msg"));
+                            remind_list.add(urgeDetails);
                         }
                         user.setRemind_list(remind_list);
                     }

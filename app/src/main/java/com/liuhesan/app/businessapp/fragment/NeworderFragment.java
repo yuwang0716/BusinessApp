@@ -1,7 +1,15 @@
 package com.liuhesan.app.businessapp.fragment;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +17,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +34,7 @@ import com.liuhesan.app.businessapp.bean.User;
 
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.NewOrderData_baidu;
+import com.liuhesan.app.businessapp.utility.NewOrderData_eleme;
 import com.liuhesan.app.businessapp.utility.NewOrderData_meituan;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
@@ -61,13 +72,20 @@ public class NeworderFragment extends Fragment {
     private Context context;
     private RequestQueue requestQueue;
     private String token;
-    private List<User> newOrderData_meit;
+    private List<User> newOrderData_meit,newOrderData_eleme;
+    private IntentFilter intentFilter_notification;
+    private boolean isSound, isShake;
+    private NotificationReceive  notificationReceive;
+    private LocalBroadcastManager localBroadcastManager;
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
                 case 0:
+                    if (newOrder_data != null){
+                        newOrder_data.clear();
+                    }
                     getBaiduNewOrderData();
                     getMeituanOrderData();
                     getElemeOrderData();
@@ -83,6 +101,12 @@ public class NeworderFragment extends Fragment {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
         token = sharedPreferences.getString("token", "");
         newOrder_data = new ArrayList<>();
+        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        //通知接收注册
+        intentFilter_notification = new IntentFilter();
+        intentFilter_notification.addAction("com.liuhesan.app.distributionapp.NOTIFICATIONSETTING");
+        notificationReceive = new NotificationReceive();
+        localBroadcastManager.registerReceiver(notificationReceive, intentFilter_notification);
         initView();
         initData();
         return view;
@@ -94,6 +118,12 @@ public class NeworderFragment extends Fragment {
         this.context = context;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        localBroadcastManager.unregisterReceiver(notificationReceive);
+    }
+
     //初始化新订单
     private void initData() {
         getBaiduNewOrderData();
@@ -102,7 +132,7 @@ public class NeworderFragment extends Fragment {
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
-                if (newOrder_data == null){
+                if (newOrder_data != null){
                     newOrder_data.clear();
                 }
                 getBaiduNewOrderData();
@@ -267,13 +297,13 @@ public class NeworderFragment extends Fragment {
                                  @Override
                                  public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                                      super.onSucceed(what, response);
-                                     newOrderData_meit = NewOrderData_meituan.getNewOrderData(response.get());
+                                     newOrderData_eleme = NewOrderData_eleme.getNewOrderData(response.get());
                                      Log.e(TAG, "饿了么新订单详情：\n"+response.get()+"onSucceed: ");
                                      if (mNewOrderAdapter == null) {
-                                         mNewOrderAdapter = new NewOrderAdapter(getContext(),  newOrderData_meit,"meit");
+                                         mNewOrderAdapter = new NewOrderAdapter(getContext(),  newOrderData_eleme,"elem");
                                          mListView.setAdapter(mNewOrderAdapter);
                                      }else {
-                                         newOrder_data.addAll( newOrderData_meit);
+                                         newOrder_data.addAll( newOrderData_eleme);
                                          mNewOrderAdapter.notifyDataSetChanged();
                                      }
                                  }
@@ -303,8 +333,44 @@ public class NeworderFragment extends Fragment {
             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                 super.onSucceed(what, response);
                 Log.e(TAG, wmName+"上报新订单:\n"+response.get());
+                Intent intent = new Intent(context,com.liuhesan.app.businessapp.ui.personcenter.MainActivity.class);
+                intent.putExtra("neworder","neworder");
+                PendingIntent pi = PendingIntent.getActivity(getContext(), 0, intent, 0);
+                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification notification = new NotificationCompat.Builder(getContext())
+                        .setContentTitle("有一笔新订单!!")
+                        //  .setContentText(data.get(0).getName())
+                        .setWhen(System.currentTimeMillis())
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_logo))
+                        .setContentIntent(pi)
+                        .setAutoCancel(true)
+                        .setSmallIcon(R.mipmap.icon_logo)
+                        .build();
+                int i = 0;
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+                if (isSound) {
+                    notification.sound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.neworder);
+                } else {
+                    builder.build().sound = null;
+                }
+                if (isShake) {
+                    notification.vibrate = new long[]{0,1000,1000,1000};
+                } else {
+                    notification.vibrate = null;
+                }
+                manager.notify(i++, notification);
+
             }
         });
+    }
+    class NotificationReceive extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //通知管理
+            isSound = intent.getBooleanExtra("isSound", false);
+            isShake = intent.getBooleanExtra("isShake", false);
+        }
     }
 }
 

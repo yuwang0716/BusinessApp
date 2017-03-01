@@ -30,6 +30,8 @@ import org.json.JSONObject;
 public class WelcomeActivity extends AppCompatActivity {
     private static final String TAG = "WelcomeActivity";
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 457;
+    private AlertDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +86,7 @@ public class WelcomeActivity extends AppCompatActivity {
                             int is_online = data.optInt("is_online");//店铺开关1:营业 0:关店
                             int certificationID = data.optInt("isvalid_user");//身份证认证：0：未审核 1：审核
                             int qualification = data.optInt("isvalid_shop");//门店资质 0：未审核 1：审核
-                            String standby_tel = data.optString("standby_tel");//联系电话
+                            String phone = data.optString("phone");//联系电话
                             String shop_name = data.optString("name");//门店名
                             String address = data.optString("address");//门店地址
                             String username = data.optString("username");//用户名
@@ -94,12 +96,13 @@ public class WelcomeActivity extends AppCompatActivity {
                             edit.putInt("is_online",is_online);
                             edit.putInt("certificationID",certificationID);
                             edit.putInt("qualification",qualification);
-                            edit.putString("standby_tel",standby_tel);
+                            edit.putString("phone",phone);
                             edit.putString("shop_name",shop_name);
                             edit.putString("address",address);
                             edit.putString("username",username);
                             edit.putString("headportrait",headportrait);
                             edit.commit();
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -135,11 +138,19 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dialog != null)
+        dialog.dismiss();
+    }
+
     private void showTipDialog() {
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder
                 .setMessage("该程序需要该权限，否则无法正常运行")
                 .setPositiveButton(android.R.string.ok, null)
-                .create()
-                .show();
+                .create();
+        dialog = builder.show();
     }
 }

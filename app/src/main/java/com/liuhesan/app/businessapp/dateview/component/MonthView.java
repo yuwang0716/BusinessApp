@@ -201,7 +201,7 @@ public abstract class MonthView extends View {
      * @param year
      * @param month
      */
-    protected void setSelectDate(int year,int month,int day){
+   protected void setSelectDate(int year,int month,int day){
         selYear = year;
         selMonth = month;
         selDay = day;

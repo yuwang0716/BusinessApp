@@ -12,6 +12,14 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:background">@mipmap/welcome</item>
     </style>
+    //登录checkbox样式
+    <style name="LoginCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/checkbox_login</item>
+    </style>
+    //开关样式
+    <style name="FirstSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:button">@drawable/switch_first</item>
+    </style>
     //窗口化样式
 
     <style name="MyActivityStyle">
@@ -50,12 +58,13 @@
     </style>
 
     //我的页面
-    <style name="mine_stylefirst">
+    <style name="mine_statistics">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:clickable">true</item>
         <item name="android:gravity">center_horizontal</item>
+        <item name="android:lineSpacingExtra">3dp</item>
     </style>
 
     <style name="mine_style_layout">
@@ -67,4 +76,25 @@
         <item name="android:paddingRight">20dp</item>
         <item name="android:paddingTop">10dp</item>
     </style>
+
+    
+    //toolbar标题
+    <style name="toolbar_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="toolbar_keep">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>

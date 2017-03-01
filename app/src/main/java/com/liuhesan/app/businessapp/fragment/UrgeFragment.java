@@ -20,20 +20,30 @@ import com.cjj.MaterialRefreshListener;
 import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.adapter.UrgingOrderAdapter;
 import com.liuhesan.app.businessapp.bean.User;
+import com.liuhesan.app.businessapp.jsonstring.Jsonurgeorder_meit;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.L;
 import com.liuhesan.app.businessapp.utility.NewOrderData_baidu;
+import com.liuhesan.app.businessapp.utility.NewOrderData_meituan;
+import com.liuhesan.app.businessapp.utility.UrgeOrderData_meituan;
+import com.yolanda.nohttp.Binary;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
+import com.yolanda.nohttp.rest.Response;
 import com.yolanda.nohttp.rest.SimpleResponseListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,7 +60,7 @@ public class UrgeFragment extends Fragment {
     private UrgingOrderAdapter mUrgingOrderAdapter;
     private MaterialRefreshLayout refreshLayout;
     private ListView mListView;
-    private List<User> urgsOrder_baidu;
+    private List<User> urgsOrder_baidu,urgsOrder_meit;
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -161,6 +171,7 @@ public class UrgeFragment extends Fragment {
         String cookie = sharedPreferences.getString("cookie", "");
         Request<String> request = NoHttp.createStringRequest(API.url_meituan_reminder, RequestMethod.GET);
             request.addHeader("Cookie",cookie);
+
         requestQueue.add(20, request, new SimpleResponseListener<String>() {
             @Override
             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
@@ -177,6 +188,14 @@ public class UrgeFragment extends Fragment {
                             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                                 super.onSucceed(what, response);
                                 Log.e(TAG, "美团催单详情：\n"+response.get());
+                                urgsOrder_meit = UrgeOrderData_meituan.getUrgeOrderData(response.get());
+                                if (mUrgingOrderAdapter == null) {
+                                    mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), urgsOrder_meit, "meit");
+                                    mListView.setAdapter(mUrgingOrderAdapter);
+                                } else {
+                                    urgsOrder_baidu.addAll(urgsOrder_meit);
+                                    mUrgingOrderAdapter.notifyDataSetChanged();
+                                }
                             }
                         });
                     }

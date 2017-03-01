@@ -47,11 +47,11 @@ public class NewOrderData_meituan {
                 JSONArray discounts = order_list_data.optJSONArray("discounts");
                 int Shop_other_discount_price = 0;
                 for (int j = 0; j < discounts.length(); j++) {
-                    JSONObject discounts_list_data = discounts.optJSONObject(i);
+                   /* JSONObject discounts_list_data = discounts.optJSONObject(i);
                     String info = discounts_list_data.optString("info");
                     String substring = info.substring(2);
                     double parseDouble = Double.parseDouble(substring);
-                    Shop_other_discount_price += parseDouble;
+                    Shop_other_discount_price += parseDouble;*/
                 }
                 user.setShop_other_discount_price("-"+Shop_other_discount_price);
                 //详单

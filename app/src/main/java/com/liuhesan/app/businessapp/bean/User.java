@@ -23,21 +23,32 @@ public class User {
     private String send_time;
     private int pay_type;
     private List<Map<String, String>> goods_list;
-    private List<Long> remind_list;
+    private List<UrgeDetails> remind_list;
     private String order_meal_fee_price;
     private String takeout_cost_price;
     private String shop_other_discount_price;
     private String rideman_name;
     private String rideman_phone;
     private String cancel_reason;
-    private String caution;
+    private String caution;//备注
     private String commission_total;
+    private String wmPoiId;//美团标记
 
-    public List<Long> getRemind_list() {
+    public String getWmPoiId() {
+        return wmPoiId;
+    }
+
+    public void setWmPoiId(String wmPoiId) {
+        this.wmPoiId = wmPoiId;
+    }
+
+
+
+    public List<UrgeDetails> getRemind_list() {
         return remind_list;
     }
 
-    public void setRemind_list(List<Long> remind_list) {
+    public void setRemind_list(List<UrgeDetails> remind_list) {
         this.remind_list = remind_list;
     }
 

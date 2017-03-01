@@ -104,7 +104,7 @@ public class DistributionAdapter extends BaseAdapter {
         if (newOrder_data.get(position).getUser_order_num_str().equals("0")){
             mViewHolder.orderNums.setText("首次下单");
         }else {
-            mViewHolder.orderNums.setText(newOrder_data.get(position).getUser_order_num_str()+"次下单");
+            mViewHolder.orderNums.setText(newOrder_data.get(position).getUser_order_num_str());
         }
         mViewHolder.useraddress.setText(newOrder_data.get(position).getUser_address());
         mViewHolder.shopPrice.setText("总共" + newOrder_data.get(position).getShop_price() + "元");

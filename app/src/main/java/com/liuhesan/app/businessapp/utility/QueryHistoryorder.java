@@ -25,7 +25,7 @@ public class QueryHistoryorder {
      public void queryData(int page, String pageSize, String order_status, String date,StringCallback stringCallback){
          SharedPreferences sharedPreferences = mContext.getSharedPreferences("login", Context.MODE_PRIVATE);
          String token = sharedPreferences.getString("token","");
-         OkGo.post(API.url_login+"order/getOrder")
+         OkGo.post(API.url_base+"order/getOrder")
                  .tag(this)
                  .params("token",token)
                  .params("page",page)

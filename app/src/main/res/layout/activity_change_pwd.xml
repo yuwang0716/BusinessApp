@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_change_pwd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.liuhesan.app.businessapp.ui.personcenter.ChangePwdActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/changepwd_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:paddingTop="20dp">
+
+        <TextView
+            style="@style/toolbar_title"
+            android:text="安全设置" />
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        style="@style/mine_style_layout"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/oldpwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="旧密码" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!--分割线-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/firstline_color" />
+
+    <LinearLayout style="@style/mine_style_layout">
+
+        <TextView
+            android:id="@+id/newpwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="新密码" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <!--分割线-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/firstline_color" />
+
+        <LinearLayout style="@style/mine_style_layout">
+
+            <TextView
+                android:id="@+id/secondnewpwd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确认密码" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
