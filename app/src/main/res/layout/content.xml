@@ -13,26 +13,27 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:orientation="horizontal"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@mipmap/icon_mine_press" />
+                android:layout_gravity="center_vertical"
+                android:background="@mipmap/first_item_name" />
 
             <TextView
                 android:id="@+id/username"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
-                android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:textSize="14dp" />
+                android:layout_weight="2"
+                android:textSize="14sp"/>
 
             <TextView
                 android:id="@+id/usersex"
@@ -41,7 +42,7 @@
                 android:layout_weight="2.5"
                 android:gravity="center_vertical"
                 android:textColor="@color/firsttext_color"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/userphone"

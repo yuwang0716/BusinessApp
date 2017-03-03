@@ -181,7 +181,7 @@ public class DistributionAdapter extends BaseAdapter {
                     PrintDataService.selectCommand(PrintDataService.NORMAL);
                     PrintDataService.selectCommand(PrintDataService.ALIGN_LEFT);
                     PrintDataService.selectCommand(PrintDataService.BOLD_CANCEL);
-                    printDataService.send(isConnection, "*********\t" + "味点口袋\t" + "*********\n");
+                    printDataService.send(isConnection, "**********  味点口袋  **********\n");
                     printDataService.send(isConnection, PrintDataService.printThreeData("商品", "数量", "实付\n"));
                     PrintDataService.selectCommand(PrintDataService.DOUBLE_HEIGHT);
                     String number;
@@ -191,15 +191,13 @@ public class DistributionAdapter extends BaseAdapter {
                     }
                     PrintDataService.selectCommand(PrintDataService.NORMAL);
                     PrintDataService.selectCommand(PrintDataService.ALIGN_LEFT);
-                    printDataService.send(isConnection, "*********\t" + "其它\t" + "*********\n");
-                    PrintDataService.selectCommand(PrintDataService.BOLD);
+                    printDataService.send(isConnection, "**********    其它    **********\n");
                     printDataService.send(isConnection, PrintDataService.printTwoData("配送费",newOrder_data.get(position).getTakeout_cost_price()+"\n" ));
                     printDataService.send(isConnection, PrintDataService.printTwoData("餐盒费",newOrder_data.get(position).getOrder_meal_fee_price()+"\n" ));
                     printDataService.send(isConnection, PrintDataService.printTwoData("优惠",newOrder_data.get(position).getShop_other_discount_price()+"\n" ));
                     printDataService.send(isConnection, PrintDataService.printTwoData("外卖平台抽取佣金",newOrder_data.get(position).getCommission_total()+"\n" ));
                     printDataService.send(isConnection, PrintDataService.printTwoData("备注：",newOrder_data.get(position).getCaution()+"\n"));
                     PrintDataService.selectCommand(PrintDataService.DOUBLE_WIDTH);
-                    PrintDataService.selectCommand(PrintDataService.BOLD_CANCEL);
                     if (newOrder_data.get(position).getPay_type() == 2) {
                         printDataService.send(isConnection,"在线支付");
                     } else {

@@ -84,6 +84,7 @@ public class LoginThirdActivity extends AppCompatActivity {
             //获取uuid
             try {
                 httpCookies_meit = cookieStore.get(new URI(API.url_meituan_uuid ));
+                Log.e(TAG, httpCookies_meit+"successLogin: " );
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -111,10 +112,16 @@ public class LoginThirdActivity extends AppCompatActivity {
                         }
                         if (code == 0){
                             Toast.makeText(LoginThirdActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
-
-                            SharedPreferences sharedPreferences = getSharedPreferences("meituan"+"cookie", Context.MODE_PRIVATE);
+                            JSONObject data = jsonObject.optJSONObject("data");
+                            String wmPoiId = data.optString("wmPoiId");
+                            String acctId = data.optString("acctId");
+                            String accessToken = data.optString("accessToken");
+                            SharedPreferences sharedPreferences = getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("cookie", response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
+                           editor.putString("cookie", response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
+                            editor.putString("wmPoiId", wmPoiId);
+                            editor.putString("acctId", acctId);
+                            editor.putString("accessToken", accessToken);
                             editor.commit();
                             Intent intent = new Intent();
                             intent.putExtra("isSuccsess_meituan",true);

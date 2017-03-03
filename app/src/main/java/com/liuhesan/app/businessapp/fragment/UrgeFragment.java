@@ -120,7 +120,7 @@ public class UrgeFragment extends Fragment {
                 message.what = 0;
                 handler.sendMessage(message);
             }
-        },1000,10*1000);
+        },1000,30*1000);
     }
 
     //百度催单

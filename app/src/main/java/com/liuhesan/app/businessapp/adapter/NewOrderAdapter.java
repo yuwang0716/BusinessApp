@@ -1,12 +1,13 @@
 package com.liuhesan.app.businessapp.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,26 +17,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.bean.User;
-import com.liuhesan.app.businessapp.http.HttpMethods;
-import com.liuhesan.app.businessapp.http.HttpMethods_third;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.widget.LinearLayoutForButton;
 import com.liuhesan.app.businessapp.widget.ListViewForScrollView;
 import com.liuhesan.app.businessapp.widget.RelativeLayoutForButton;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.SimpleResponseListener;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,9 +38,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.Call;
-import okhttp3.Response;
-import rx.Subscriber;
 
 /**
  * Created by Tao on 2016/11/14.
@@ -65,7 +55,12 @@ public class NewOrderAdapter extends BaseAdapter {
     private String token;
     HashMap<Integer, View> map = new HashMap<Integer, View>();
     private RequestQueue requestQueue;
-    public NewOrderAdapter(Context mContext, List<User> newOrder_data,String name) {
+    private SharedPreferences sharedPreferences_wm;
+    private String cookie_baidu;
+    private String order_wm_id;
+    private String cookie_meit;
+
+    public NewOrderAdapter(Context mContext, List<User> newOrder_data, String name) {
         this.mContext = mContext;
         this.newOrder_data = newOrder_data;
         this.name = name;
@@ -86,6 +81,7 @@ public class NewOrderAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -103,22 +99,24 @@ public class NewOrderAdapter extends BaseAdapter {
             mViewHolder.orderNumsLinearlayout = (LinearLayoutForButton) convertView.findViewById(R.id.order_nums_linearlayout);
             mViewHolder.contentImagebuttons = (RelativeLayoutForButton) convertView.findViewById(R.id.content_imagebuttons);
             mViewHolder.reason_expand = (LinearLayoutForButton) convertView.findViewById(R.id.reason_expand);
+            mViewHolder.order_nums.setVisibility(View.GONE);
         } else {
             convertView = map.get(position);
             mViewHolder = (ViewHolder) convertView.getTag();
         }
-        mViewHolder.ordernumbertwo.setText(newOrder_data.get(position).getOrder_id());
+        mViewHolder.order_id.setText("#" + newOrder_data.get(position).getOrder_id());
         mViewHolder.username.setText(newOrder_data.get(position).getUser_real_name());
         mViewHolder.usersex.setText(newOrder_data.get(position).getSex());
-        if (newOrder_data.get(position).getUser_order_num_str().equals("0")){
-            mViewHolder.order_nums.setText("首次下单");
-        }else if (newOrder_data.get(position).getUser_order_num_str().equals("首次下单")){
-            mViewHolder.order_nums.setText("首次下单");
-        }else {
-            mViewHolder.order_nums.setText(newOrder_data.get(position).getUser_order_num_str()+"次下单");
-        }
         mViewHolder.useraddress.setText(newOrder_data.get(position).getUser_address());
+        if (newOrder_data.get(position).getPay_type() == 2) {
+            mViewHolder.onlinePay.setVisibility(View.VISIBLE);
+            mViewHolder.sendgoodsPay.setVisibility(View.GONE);
+        } else {
+            mViewHolder.onlinePay.setVisibility(View.GONE);
+            mViewHolder.sendgoodsPay.setVisibility(View.VISIBLE);
+        }
         mViewHolder.shop_price.setText("总共" + newOrder_data.get(position).getShop_price() + "元");
+
         if (name == "baidu") {
             String date = getDate(position, "yyyy/M/d HH:mm");
             int lastIndexOf = date.lastIndexOf(" ");
@@ -126,200 +124,216 @@ public class NewOrderAdapter extends BaseAdapter {
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(date);
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_baidu));
-        }else if (name == "meit"){
-            mViewHolder.ordertime.setText(newOrder_data.get(position).getCreate_time());
+        } else if (name == "meit") {
+            String date = newOrder_data.get(position).getCreate_time();
+            int lastIndexOf = date.lastIndexOf(" ");
+            String substring = date.substring(lastIndexOf);
+            mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_meituan));
-        }else {
-            mViewHolder.ordertime.setText(newOrder_data.get(position).getCreate_time());
+        } else {
+            String date = newOrder_data.get(position).getCreate_time();
+
+            int lastIndexOf = date.indexOf(":");
+            String substring = date.substring(lastIndexOf-2);
+            mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_eleme));
         }
         mViewHolder.send_time.setText(newOrder_data.get(position).getSend_time());
 
-        mViewHolder.ordernumber_two.setText(newOrder_data.get(position).getOrder_id());
+        mViewHolder.ordernumber_two.setText(newOrder_data.get(position).getOrder_wm_id());
         mViewHolder.userphone.setText(newOrder_data.get(position).getUser_phone());
         List<Map<String, String>> goods_list = newOrder_data.get(position).getGoods_list();
         GoodsAdapter mGoodsAdapter = new GoodsAdapter(mContext, goods_list);
         mViewHolder.order_content.setAdapter(mGoodsAdapter);
 
+
+        mViewHolder.order_meal_fee.setText(newOrder_data.get(position).getOrder_meal_fee_price());
+        mViewHolder.shipping_fee.setText(newOrder_data.get(position).getTakeout_cost_price());
+        mViewHolder.shop_other_discount.setText(newOrder_data.get(position).getShop_other_discount_price());
+        mViewHolder.totalPrice.setText(newOrder_data.get(position).getShop_price());
+        mViewHolder.caution.setText(newOrder_data.get(position).getCaution());
+        //百度操作订单的一些参数
+        sharedPreferences_wm = mContext.getSharedPreferences(name + "cookie", Context.MODE_PRIVATE);
+        cookie_baidu = sharedPreferences_wm.getString("cookie", "");
+        order_wm_id = newOrder_data.get(position).getOrder_wm_id();
+
         //美团操作订单的一些参数
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituan",Context.MODE_PRIVATE);
-        String cookie = sharedPreferences.getString("cookie", "");
-        String[] split = cookie.split(";");
-        if (split.length > 10) {
-            wmPoiId = split[10].split("=")[1];
-            acctId = split[7].split("=")[1];
-            token = split[8].split("=")[1];
-        }
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
+        cookie_meit = sharedPreferences.getString("cookie", "");
+        token = sharedPreferences.getString("accessToken", "");
+        wmPoiId = sharedPreferences.getString("wmPoiId", "");
+        acctId = sharedPreferences.getString("acctId", "");
         //饿了么操作订单的一些参数
-        sharedPreferences = mContext.getSharedPreferences("meituan",Context.MODE_PRIVATE);
-        String uuid = sharedPreferences.getString("cookie", "");
+        sharedPreferences = mContext.getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
+        String uuid = sharedPreferences.getString("uuid", "");
         String ksid = sharedPreferences.getString("ksid", "");
-        String typeCode = "FORCE_REJECT_ORDER";
-        // TODO: 2016/12/9
-        //后期typeCode这个参数需要做选择
 
 
         //订单操作
         mViewHolder.printFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sharedPreferences = mContext.getSharedPreferences(name+"cookie", Context.MODE_PRIVATE);
+
                 //百度接单
-                if (name == "baidu"){
+                if (name == "baidu") {
                     Request<String> request_sure = NoHttp.createStringRequest(API.url_baidu_neworder_sure, RequestMethod.POST);
-                    request_sure.addHeader("Cookie",sharedPreferences.getString("cookie",""));
-                    request_sure.addHeader("order_id",newOrder_data.get(position).getOrder_id());
-                    request_sure.addHeader("pc_ver", "");
-                    request_sure.addHeader("from", "pc");
+                    request_sure.addHeader("Cookie", cookie_baidu);
+                    request_sure.add("order_id", order_wm_id);
+                    request_sure.add("pc_ver", "");
+                    request_sure.add("from", "pc");
                     requestQueue.add(10, request_sure, new SimpleResponseListener<String>() {
                         @Override
                         public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                             super.onSucceed(what, response);
-                            Log.e(TAG, response.get()+"onSucceed: ");
+                            Log.e(TAG, response.get() + "onSucceed: ");
                             //newOrder_data.remove(position);
                         }
                     });
-            }
+                }
                 //美团的接单
-                if (name == "meituan"){
-                    OkGo.post("https://waimaie.meituan.com/v2/order/receive/unprocessed/w/confirm")
-                            .params("wmPoiId",wmPoiId)
-                            .params("acctId",acctId)
-                            .params("appType", 3)
-                            .params("token", token)
-                            .params("isPrint","0")
-                            .params("isAutoAccept","0")
-                            .params("csrfToken","")
-                            .execute(new StringCallback() {
-                                @Override
-                                public void onSuccess(String s, Call call, Response response) {
-                                    Log.i("TAGprint", s+"onSuccess: ");
-                                }
-                            });
+                if (name == "meit") {
+
+                    Request<String> request_sure = NoHttp.createStringRequest(API.url_meituan_neworder_sure, RequestMethod.GET);
+                    request_sure.addHeader("Cookie", cookie_meit);
+                    request_sure.add("token", token);
+                    request_sure.add("orderId", order_wm_id);
+                    request_sure.add("wmPoiId", wmPoiId);
+                    request_sure.add("acctId", acctId);
+                    request_sure.add("appType", 3);
+                    request_sure.add("isPrint", "0");
+                    request_sure.add("isAutoAccept", "0");
+                    request_sure.add("csrfToken", "");
+                    requestQueue.add(20, request_sure, new SimpleResponseListener<String>() {
+                        @Override
+                        public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                            super.onSucceed(what, response);
+                            Log.e(TAG, response.get() + "onSucceed: ");
+                        }
+                    });
+
                 }
                 //饿了么接单
-                if (name == "eleme"){
-                    String params = "{\"id\":\""+uuid+"\",\"method\":\"invalidateOrder\",\"service\"" +
-                            ":\"OrderService\",\"params\": {\"orderId\":\""+newOrder_data.get(position).getOrder_id()+"\",\"typeCode\":" +
-                            "\""+typeCode+"\",\"remark\":\"\"},\"metas\": {\"appName\":\"melody\",\"" +
-                            "appVersion\":\"4.4.0\",\"ksid\":\""+ksid+"\"},\"ncp\":\"2.0.0\"}\n";
-                    OkGo.post("https://app-api.shop.ele.me/nevermore/invoke/?method=OrderService.invalidateOrder")
-                            .tag(this)
-                            .upString(params)
-                            .execute(new StringCallback() {
-                                @Override
-                                public void onSuccess(String s, Call call, Response response) {
-                                    Log.i("TAGcancel", s+"onSuccess: ");
-                                }
-                            });
+                if (name == "eleme") {
+                    String params = "{\"id\":\"" + uuid + "\",\"method\":\"confirmOrder\",\"service\"" +
+                            ":\"order\",\"params\": {\"orderId\":\"" + order_wm_id + "},\"metas\": {\"appName\":\"melody\",\"" +
+                            "appVersion\":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+
+                    Request<String> request_sure = NoHttp.createStringRequest(API.url_eleme_neworder_sure, RequestMethod.POST);
+                    request_sure.setDefineRequestBodyForJson(params);
+                    requestQueue.add(30, request_sure, new SimpleResponseListener<String>() {
+                        @Override
+                        public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                            super.onSucceed(what, response);
+                            Log.e(TAG, response.get() + "onSucceed: ");
+                        }
+                    });
                 }
+
             }
         });
+
         mViewHolder.cancelFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 //百度订单取消
-                if (name == "baidu"){
-                    Map<String, String> map = new HashMap<>();
-                map.put("order_id", newOrder_data.get(position).getOrder_id());
-                map.put("cancel_reason ", "用户致电取消");
-                map.put("cancel_reason_status", "5");
-                HttpMethods_third.getInstance(mContext).cancel(API.url_baidu, "refuseorder", map, new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(s);
-                            int errno = jsonObject.optInt("errno");
-                            if (errno == 0) {
-                                Toast.makeText(mContext, "取消成功", Toast.LENGTH_SHORT).show();
-                                Map<String, String> map = new HashMap<>();
-                                map.put("order_id", newOrder_data.get(position).getOrder_id());
-                                map.put("platform", "baidu");
-                                SharedPreferences sharedPreferences = mContext.getSharedPreferences("login", Context.MODE_PRIVATE);
-                                HttpMethods.getInstance(mContext).operation(API.url_login, "cancelOrder", sharedPreferences.getString("token", ""), map, new Subscriber<String>() {
-                                    @Override
-                                    public void onCompleted() {
-
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-
-                                    }
-
-                                    @Override
-                                    public void onNext(String s) {
-                                        newOrder_data.remove(position);
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(mContext, "取消失败", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-                //美团的订单取消
-                if (name == "meituan"){
-
-                    OkGo.post("https://waimaie.meituan.com/v2/order/receive/unprocessed/w/confirm")
-                            .tag(this)
-                            .params("orderId",newOrder_data.get(position).getOrder_id())
-                            .params("wmPoiId", wmPoiId)
-                            .params("acctId", acctId)
-                            .params("appType", 3)
-                            .params("token", token)
-                            .params("csrfToken","")
-                            .params("reasonId","336")
-                            .params("remark","")
-                            .params("isInNewOrder","")
-                            .params("subRadioId","")
-                            .execute(new StringCallback() {
+                if (name == "baidu") {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("取消原因");
+                    final String[] reasons_baidu = {"不在配送范围", "美食已售完", "用户致电取消", "假订单", "重复订单", "联系不上用户", "餐厅太忙"};
+                    final int[] reason_status_baidu = {1, 3, 5, 9, 10, 11, 12};
+                    builder.setItems(reasons_baidu, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Request<String> request_cancel = NoHttp.createStringRequest(API.url_baidu_neworder_cancel, RequestMethod.POST);
+                            request_cancel.addHeader("Cookie", cookie_baidu);
+                            request_cancel.add("order_id", order_wm_id);
+                            request_cancel.add("cancel_reason", reasons_baidu[which]);
+                            request_cancel.add("cancel_reason_status", reason_status_baidu[which]);
+                            requestQueue.add(11, request_cancel, new SimpleResponseListener<String>() {
                                 @Override
-                                public void onSuccess(String s, Call call, Response response) {
-                                    Log.i("TAGcancel", s+"onSuccess: ");
+                                public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                                    super.onSucceed(what, response);
+                                    Log.e(TAG, response.get() + "onSucceed: ");
+                                    // newOrder_data.remove(position);
                                 }
                             });
+                        }
+                    });
+                    builder.show();
+
+                }
+                //美团的订单取消
+                if (name == "meit") {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("取消原因");
+                    final String[] reasons_meit = {"不在配送范围", "美食已售完", "用户致电取消", "配送员取餐慢", "配送员送餐慢", "重复订单", "联系不上用户", "餐厅太忙"};
+                    final int[] reason_status_meit = {336, 338, 358, 858, 859, 357, 351, 335};
+                    builder.setItems(reasons_meit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Request<String> request_cancel = NoHttp.createStringRequest(API.url_meituan_neworder_sure, RequestMethod.GET);
+                            request_cancel.addHeader("Cookie", cookie_meit);
+                            request_cancel.add("token", token);
+                            request_cancel.add("orderId", order_wm_id);
+                            request_cancel.add("wmPoiId", wmPoiId);
+                            request_cancel.add("acctId", acctId);
+                            request_cancel.add("appType", 3);
+                            request_cancel.add("reasonId", reason_status_meit[which]);
+                            request_cancel.add("remark", "");
+                            request_cancel.add("csrfToken", "");
+                            request_cancel.add("subRadioId", "");
+                            requestQueue.add(20, request_cancel, new SimpleResponseListener<String>() {
+                                @Override
+                                public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                                    super.onSucceed(what, response);
+                                    Log.e(TAG, response.get() + "onSucceed: ");
+                                }
+                            });
+                        }
+                    });
+
+
+                    builder.show();
                 }
                 //饿了么取消订单
-                if (name == "eleme"){
-
-                    String params = "{\"id\":\""+uuid+"\",\"method\":\"invalidateOrder\",\"service\"" +
-                            ":\"OrderService\",\"params\": {\"orderId\":\""+newOrder_data.get(position).getOrder_id()+"\",\"typeCode\":\"" +
-                            "%s\",\"remark\":\"\"},\"metas\": {\"appName\":\"melody\",\"appVersion\"" +
-                            ":\"4.4.0\",\"ksid\":\""+ksid+"\"},\"ncp\":\"2.0.0\"}\n";
-                    OkGo.post("https://app-api.shop.ele.me/nevermore/invoke/?method=OrderService.invalidateOrder")
-                            .tag(this)
-                            .upString(params)
-                            .execute(new StringCallback() {
+                if (name == "eleme") {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("取消原因");
+                    final String[] reasons_elem = {"不在配送范围", "美食已售完", "用户致电取消", "联系不上用户", "餐厅太忙","其它"};
+                    final String[] reason_status_elem = {"DISTANCE_TOO_FAR", "FOOD_SOLD_OUT","FORCE_REJECT_ORDER","CONTACT_USER_FAILED", "RESTAURANT_TOO_BUSY", "OTHERS"};
+                    builder.setItems(reasons_elem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String params = "{\"id\":\"" + uuid + "\",\"method\":\"invalidateOrder\",\"service\"" +
+                                    ":\"OrderService\",\"params\": {\"orderId\":\"" + order_wm_id + "\",\"typeCode\":\""
+                                    +reason_status_elem[which]+"\",\"remark\":\"\"},\"metas\": {\"appName\":\"melody\",\"appVersion\"" +
+                                    ":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+                            Request<String> request_cancel = NoHttp.createStringRequest(API.url_eleme_neworder_cancel, RequestMethod.POST);
+                            request_cancel.setDefineRequestBodyForJson(params);
+                            requestQueue.add(31, request_cancel, new SimpleResponseListener<String>() {
                                 @Override
-                                public void onSuccess(String s, Call call, Response response) {
-                                    Log.i("TAGcancel", s+"onSuccess: ");
+                                public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                                    super.onSucceed(what, response);
+                                    Log.e(TAG,response.get()+ "onSucceed: " );
                                 }
                             });
+                        }
+                    });
+                    builder.show();
                 }
+
             }
         });
         //拨电话
         mViewHolder.userphone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel://"+newOrder_data.get(position).getUser_phone()));
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel://" + newOrder_data.get(position).getUser_phone()));
                 mContext.startActivity(intent);
             }
         });
@@ -388,7 +402,6 @@ public class NewOrderAdapter extends BaseAdapter {
 
     }
 
-
     private String getDate(int position, String formatType) {
         long i = Integer.parseInt(newOrder_data.get(position).getCreate_time());
         SimpleDateFormat sdf = new SimpleDateFormat(formatType);
@@ -417,8 +430,8 @@ public class NewOrderAdapter extends BaseAdapter {
     static class ViewHolder {
         @BindView(R.id.logo)
         ImageView logo;
-        @BindView(R.id.ordernumbertwo)
-        TextView ordernumbertwo;
+        @BindView(R.id.order_id)
+        TextView order_id;
         @BindView(R.id.username)
         TextView username;
         @BindView(R.id.usersex)
@@ -450,15 +463,29 @@ public class NewOrderAdapter extends BaseAdapter {
         @BindView(R.id.order_nums_linearlayout)
         LinearLayout order_nums_linearlayout;
         @BindView(R.id.first_buttons)
-        LinearLayout  first_buttons;
+        LinearLayout first_buttons;
         @BindView(R.id.content_imagebuttons)
         RelativeLayoutForButton content_imagebuttons;
+        @BindView(R.id.order_meal_fee)
+        TextView order_meal_fee;
+        @BindView(R.id.shipping_fee)
+        TextView shipping_fee;
+        @BindView(R.id.shop_other_discount)
+        TextView shop_other_discount;
+        @BindView(R.id.total_price)
+        TextView totalPrice;
+        @BindView(R.id.caution)
+        TextView caution;
         TextView rideman_expand;
         Button cancelFirst;
         Button printFirst;
         LinearLayoutForButton orderNumsLinearlayout;
-        LinearLayoutForButton useraddress_expand,online_pay_expand,reason_expand;
+        LinearLayoutForButton useraddress_expand, online_pay_expand, reason_expand;
         RelativeLayoutForButton contentImagebuttons;
+        @BindView(R.id.online_pay)
+        TextView onlinePay;
+        @BindView(R.id.sendgoods_pay)
+        TextView sendgoodsPay;
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }

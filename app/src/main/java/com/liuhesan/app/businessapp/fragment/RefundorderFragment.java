@@ -11,10 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
 import com.liuhesan.app.businessapp.R;
+import com.liuhesan.app.businessapp.adapter.UrgingOrderAdapter;
+import com.liuhesan.app.businessapp.bean.User;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.L;
+import com.liuhesan.app.businessapp.utility.RefundOrderData_meituan;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
@@ -24,6 +30,8 @@ import com.yolanda.nohttp.rest.SimpleResponseListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,6 +44,10 @@ public class RefundorderFragment extends Fragment {
     private View view;
     private Context mContext;
     private RequestQueue requestQueue;
+    private List<User> refundOrder_baidu,refundOrder_meit;
+    private UrgingOrderAdapter mUrgingOrderAdapter;
+    private ListView mListView;
+    private MaterialRefreshLayout refreshLayout;
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -54,10 +66,25 @@ public class RefundorderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_first_remind_refundorder, container, false);
         requestQueue = NoHttp.newRequestQueue();
+        refundOrder_baidu = new ArrayList<>();
+        mListView = (ListView) view.findViewById(R.id.refund_listview);
+        refreshLayout = (MaterialRefreshLayout) view.findViewById(R.id.refresh);
         initBaiduData("baidu");
         initMeitData("meituan");
         initElemData("eleme");
         getRepeatData();
+        refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
+            @Override
+            public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+                if (refundOrder_baidu == null){
+                    refundOrder_baidu.clear();
+                }
+                initBaiduData("baidu");
+                initMeitData("meituan");
+                initElemData("eleme");
+                materialRefreshLayout.finishRefresh();
+            }
+        });
         return view;
     }
     @Override
@@ -74,7 +101,7 @@ public class RefundorderFragment extends Fragment {
                 message.what = 0;
                 handler.sendMessage(message);
             }
-        },1000,10*1000);
+        },1000,30*1000);
     }
     //百度退单
     private void initBaiduData(String wmName) {
@@ -126,18 +153,29 @@ public class RefundorderFragment extends Fragment {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response.get());
-                    //获取退单详情
-                    Request<String> request_redund_details = NoHttp.createStringRequest(API.url_meituan_refund_details, RequestMethod.GET);
-                    request_redund_details.addHeader("Cookie", sharedPreferences.getString("cookie", ""));
-                    requestQueue.add(21, request_redund_details, new SimpleResponseListener<String>() {
-                        @Override
-                        public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
-                            super.onSucceed(what, response);
-                            Log.e(TAG, "美团退单详情：\n" + response.get() + "onSucceed: ");
-                        }
-                    });
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    int toRefundCount = data.optInt("toRefundCount");
+                    if (toRefundCount >0) {
+                        //获取退单详情
+                        Request<String> request_redund_details = NoHttp.createStringRequest(API.url_meituan_refund_details, RequestMethod.GET);
+                        request_redund_details.addHeader("Cookie", sharedPreferences.getString("cookie", ""));
+                        requestQueue.add(21, request_redund_details, new SimpleResponseListener<String>() {
+                            @Override
+                            public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                                super.onSucceed(what, response);
+                                Log.e(TAG, "美团退单详情：\n" + response.get() + "onSucceed: ");
+                                refundOrder_meit = RefundOrderData_meituan.getRefundOrderData(response.get());
+                                if (mUrgingOrderAdapter == null) {
+                                    mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), refundOrder_meit, "meit");
+                                    mListView.setAdapter(mUrgingOrderAdapter);
+                                } else {
+                                    refundOrder_baidu.addAll(refundOrder_meit);
+                                    mUrgingOrderAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        });
 
-
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

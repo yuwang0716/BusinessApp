@@ -1,4 +1,4 @@
-package com.liuhesan.app.busineresponse.getsapp.ui.personcenter;
+package com.liuhesan.app.businessapp.ui.personcenter;
 
 import android.app.Activity;
 import android.content.Context;

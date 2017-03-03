@@ -50,7 +50,12 @@ public class NewOrderData_baidu {
                     user.setOrder_meal_fee_price(order_meal_fee.optString("price"));
                     user.setTakeout_cost_price(takeout_cost.optString("price"));
                     user.setShop_other_discount_price(shop_other_discount.optString("price"));
-
+                    String paytype = order_basic.optJSONArray("mobile_order_label").optJSONObject(0).optString("name");
+                    if ("货到付款".equals(paytype)){
+                        user.setPay_type(1);
+                    }else {
+                        user.setPay_type(2);
+                    }
                     JSONObject order_goods = order_list_data.getJSONObject("order_goods");
                     JSONArray goods_list = order_goods.getJSONArray("goods_list");
                     List<Map<String, String>> goods_lists = new ArrayList<>();

@@ -32,6 +32,7 @@ public class API {
     public static final String url_baidu_urgingOrder_details = url_baidu_data+"crm?qt=getremindorderlist&replied=0&display=json";
     public static final String url_baidu_refundOrder_details = url_baidu_data+"crm?qt=getusercancellist&type=1&display=json";
     public static final String url_baidu_neworder_sure = url_baidu_data+"crm?qt=confirmorder";
+    public static final String url_baidu_neworder_cancel = url_baidu_data+"crm?qt=cancelorder";
 
     //美团外卖
     public static final String url_meituan = "http://e.waimai.meituan.com/";
@@ -46,6 +47,7 @@ public class API {
     public static final String url_meituan_reminder_times = url_meituan_base+"customer/reminder/list";
     public static final String url_meituan_refund = url_meituan_base+"history/r/refundOrderCount/notify";
     public static final String url_meituan_refund_details = url_meituan_base+"refund/unprocessed/r/query?getNewVo=1&pageNum=1";
+    public static final String url_meituan_neworder_sure = url_meituan_base+"receive/unprocessed/w/confirm";
 
 
     //饿了么外卖
@@ -57,6 +59,8 @@ public class API {
     public static final String url_eleme_notification = url_eleme+"nevermore/invoke/?method=PollingService.pollingForHighFrequency";
     public static final String url_eleme_reminder = url_eleme+"nevermore/invoke/?method=PollingService.pollingForLowFrequency";
     public static final String url_eleme_reminder_details = url_eleme+"nevermore/invoke/?method=OrderService.queryOrder";
+    public static final String url_eleme_neworder_sure = url_eleme+"nevermore/invoke/?method=order.confirmOrder";
+    public static final String url_eleme_neworder_cancel = url_eleme+"nevermore/invoke/?method=OrderService.invalidateOrder";
 
     private static String REURL;
 

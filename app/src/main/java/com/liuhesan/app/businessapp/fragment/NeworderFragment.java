@@ -31,7 +31,7 @@ import com.cjj.MaterialRefreshListener;
 import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.adapter.NewOrderAdapter;
 import com.liuhesan.app.businessapp.bean.User;
-
+import com.liuhesan.app.businessapp.jsonstring.Jsonneworder_meituan;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.NewOrderData_baidu;
 import com.liuhesan.app.businessapp.utility.NewOrderData_eleme;
@@ -42,15 +42,15 @@ import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.SimpleResponseListener;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -72,7 +72,8 @@ public class NeworderFragment extends Fragment {
     private Context context;
     private RequestQueue requestQueue;
     private String token;
-    private List<User> newOrderData_meit,newOrderData_eleme;
+    private List<User> newOrderData_baidu, newOrderData_meit,newOrderData_eleme;
+    private Set<List<User>> lists;
     private IntentFilter intentFilter_notification;
     private boolean isSound, isShake;
     private NotificationReceive  notificationReceive;
@@ -101,6 +102,10 @@ public class NeworderFragment extends Fragment {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("login", Context.MODE_PRIVATE);
         token = sharedPreferences.getString("token", "");
         newOrder_data = new ArrayList<>();
+        newOrderData_baidu = new ArrayList<>();
+        newOrderData_meit = new ArrayList<>();
+        newOrderData_eleme = new ArrayList<>();
+        lists = new HashSet<>();
         localBroadcastManager = LocalBroadcastManager.getInstance(context);
         //通知接收注册
         intentFilter_notification = new IntentFilter();
@@ -132,9 +137,6 @@ public class NeworderFragment extends Fragment {
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
-                if (newOrder_data != null){
-                    newOrder_data.clear();
-                }
                 getBaiduNewOrderData();
                 getMeituanOrderData();
                 getElemeOrderData();
@@ -149,15 +151,15 @@ public class NeworderFragment extends Fragment {
                 message.what = 0;
                  handler.sendMessage(message);
             }
-        },1000,10*1000);
+        },1000,30*1000);
     }
 
     //获取百度新订单
     private void getBaiduNewOrderData() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("baiducookie", Context.MODE_PRIVATE);
-        Request<String> request_notification = NoHttp.createStringRequest(API.url_baidu_neworder_notification, RequestMethod.GET);
-        request_notification.addHeader("Cookie",sharedPreferences.getString("cookie",""));
-        requestQueue.add(10, request_notification, new SimpleResponseListener<String>() {
+        Request<String> request_newOrder = NoHttp.createStringRequest(API.url_baidu_neworder_notification, RequestMethod.GET);
+        request_newOrder.addHeader("Cookie",sharedPreferences.getString("cookie",""));
+        requestQueue.add(10, request_newOrder, new SimpleResponseListener<String>() {
             @Override
             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                 super.onSucceed(what, response);
@@ -167,14 +169,14 @@ public class NeworderFragment extends Fragment {
                     JSONObject data = jsonObject.optJSONObject("data");
                     if (data != null) {
                         int new_order_count = data.optInt("new_order_count");
-                        if (new_order_count > 0) {
+                        if (  new_order_count > 0) {
 
                             //上报新订单
                             reportedData("baidu", response.get());
 
                             //获取新订单详情
                             Request<String> request_newOrder_details = NoHttp.createStringRequest(API.url_baidu_neworder_details, RequestMethod.GET);
-                            request_notification.addHeader("Cookie", sharedPreferences.getString("cookie", ""));
+                            request_newOrder_details.addHeader("Cookie", sharedPreferences.getString("cookie", ""));
                             requestQueue.add(12, request_newOrder_details, new SimpleResponseListener<String>() {
                                 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                                 @Override
@@ -183,10 +185,19 @@ public class NeworderFragment extends Fragment {
                                     Log.e(TAG, "百度新订单详情：\n" + response.get() + "onSucceed: ");
                                     newOrder_data = NewOrderData_baidu.getNewOrderData(response.get());
                                     if (mNewOrderAdapter == null) {
-                                        mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data, "baidu");
+                                        Log.e(TAG, "百度新订：\n" + newOrder_data + "onSucceed: ");
+                                        lists.add(newOrderData_baidu);
+                                        newOrder_data.addAll(newOrderData_baidu);
+                                        mNewOrderAdapter = new NewOrderAdapter(context, newOrder_data, "baidu");
                                         mListView.setAdapter(mNewOrderAdapter);
+
                                     } else {
-                                        mNewOrderAdapter.notifyDataSetChanged();
+                                        if (!lists.contains(newOrderData_baidu)){
+                                            newOrder_data.clear();
+                                            newOrder_data.addAll(newOrderData_baidu);
+                                            mNewOrderAdapter.notifyDataSetChanged();
+
+                                        }
                                     }
                                 }
                             });
@@ -222,7 +233,7 @@ public class NeworderFragment extends Fragment {
                         count = data.optInt("count");
                     }
                     //新订单详情
-                    if (count > 0) {
+                    if ( count > 0) {
                         SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
                         Date curDate=new Date(System.currentTimeMillis());//获取当前时间     
                         String time = formatter.format(curDate);
@@ -236,20 +247,34 @@ public class NeworderFragment extends Fragment {
 
                                 //新订单上报服务器
                                 reportedData("meit",response.get());
-
                                 //获取新订单详情
                                 requestQueue.add(22, request_details, new SimpleResponseListener<String>() {
                                     @Override
                                     public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                                         super.onSucceed(what, response);
                                         newOrderData_meit = NewOrderData_meituan.getNewOrderData(response.get());
-                                        Log.e(TAG, "美团新订单详情：\n"+response.get()+"onSucceed: ");
+                                        Log.e(TAG, "美团新订单详情：\n"+Jsonneworder_meituan.neworder+"onSucceed: ");
                                         if (mNewOrderAdapter == null) {
-                                            mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrderData_meit,"meit");
+                                            lists.add(newOrderData_meit);
+                                            newOrder_data.addAll(newOrderData_meit);
+                                            mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data,"meit");
                                             mListView.setAdapter(mNewOrderAdapter);
                                         }else {
-                                            newOrder_data.addAll(newOrderData_meit);
-                                            mNewOrderAdapter.notifyDataSetChanged();
+                                           lists.add(newOrderData_meit);
+                                            if (newOrderData_baidu == null && !lists.contains(newOrderData_meit)){
+                                                newOrder_data.clear();
+                                                newOrder_data.addAll(newOrderData_meit);
+                                                mNewOrderAdapter.notifyDataSetChanged();
+                                            }else if (newOrderData_baidu != null && !lists.contains(newOrderData_meit)){
+                                                newOrder_data.clear();
+                                                newOrder_data.addAll(newOrderData_baidu);
+                                                newOrder_data.addAll(newOrderData_meit);
+                                                mNewOrderAdapter.notifyDataSetChanged();
+                                            }else if (newOrder_data.size() == newOrderData_baidu.size()){
+                                                newOrder_data.addAll(newOrderData_meit);
+                                                mNewOrderAdapter.notifyDataSetChanged();
+
+                                            }
                                         }
                                     }
                                 });
@@ -300,16 +325,35 @@ public class NeworderFragment extends Fragment {
                                      newOrderData_eleme = NewOrderData_eleme.getNewOrderData(response.get());
                                      Log.e(TAG, "饿了么新订单详情：\n"+response.get()+"onSucceed: ");
                                      if (mNewOrderAdapter == null) {
-                                         mNewOrderAdapter = new NewOrderAdapter(getContext(),  newOrderData_eleme,"elem");
+                                         lists.add(newOrderData_eleme);
+                                         newOrder_data.addAll(newOrderData_eleme);
+                                         mNewOrderAdapter = new NewOrderAdapter(context, newOrder_data,"eleme");
                                          mListView.setAdapter(mNewOrderAdapter);
                                      }else {
                                          newOrder_data.addAll( newOrderData_eleme);
                                          mNewOrderAdapter.notifyDataSetChanged();
+
+                                         lists.add( newOrderData_eleme);
+                                         if (newOrderData_baidu == null && newOrderData_meit == null && !lists.contains(newOrderData_meit)){
+                                             newOrder_data.clear();
+                                             newOrder_data.addAll(newOrderData_meit);
+                                             mNewOrderAdapter.notifyDataSetChanged();
+                                         }else if (!lists.contains(newOrderData_meit)){
+                                             newOrder_data.clear();
+                                             newOrder_data.addAll(newOrderData_baidu);
+                                             newOrder_data.addAll(newOrderData_meit);
+                                             newOrder_data.addAll(newOrderData_eleme);
+                                             mNewOrderAdapter.notifyDataSetChanged();
+                                         }else if (newOrder_data.size() == newOrderData_baidu.size() || (newOrder_data.size() == newOrderData_meit.size())){
+                                             newOrder_data.addAll(newOrderData_meit);
+                                             mNewOrderAdapter.notifyDataSetChanged();
+                                         }
                                      }
                                  }
                              });
                          }
                      } catch (JSONException e) {
+                         e.printStackTrace();
                      }
                  }
              });
@@ -335,13 +379,13 @@ public class NeworderFragment extends Fragment {
                 Log.e(TAG, wmName+"上报新订单:\n"+response.get());
                 Intent intent = new Intent(context,com.liuhesan.app.businessapp.ui.personcenter.MainActivity.class);
                 intent.putExtra("neworder","neworder");
-                PendingIntent pi = PendingIntent.getActivity(getContext(), 0, intent, 0);
-                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                Notification notification = new NotificationCompat.Builder(getContext())
+                PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+                NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification notification = new NotificationCompat.Builder(context)
                         .setContentTitle("有一笔新订单!!")
                         //  .setContentText(data.get(0).getName())
                         .setWhen(System.currentTimeMillis())
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_logo))
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.icon_logo))
                         .setContentIntent(pi)
                         .setAutoCancel(true)
                         .setSmallIcon(R.mipmap.icon_logo)

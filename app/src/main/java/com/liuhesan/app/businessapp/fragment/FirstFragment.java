@@ -34,10 +34,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.liuhesan.app.busineresponse.getsapp.ui.personcenter.LoginBaiduActivity;
 import com.liuhesan.app.businessapp.R;
-import com.liuhesan.app.businessapp.http.HttpMethods;
 import com.liuhesan.app.businessapp.ui.personcenter.LoginActivity;
+import com.liuhesan.app.businessapp.ui.personcenter.LoginBaiduActivity;
 import com.liuhesan.app.businessapp.ui.personcenter.LoginThirdActivity;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.AppManager;
@@ -61,7 +60,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import rx.Subscriber;
 
 /**
  * Created by Home on 2016/11/8.
@@ -446,7 +444,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     editor.clear();
                     editor.commit();
                 } else {
-                    Intent intent = new Intent(getActivity(), LoginBaiduActivity.class);
+                    Intent intent = new Intent(mContext, LoginBaiduActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putCharSequence("title", "baidu");
                     intent.putExtra("title", bundle);
@@ -564,7 +562,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 super.onSucceed(what, response);
-                Log.i("TAGcommitThird", response.get() + "onNext: ");
+                Log.i("TAGcommitThird", response.get() + "onNext:\n "+cookie);
             }
         });
     }

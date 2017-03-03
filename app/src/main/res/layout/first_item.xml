@@ -13,24 +13,18 @@
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
         >
-        <TextView
-            android:id="@+id/ordernumberone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="#1"
-            android:textSize="19dp"
-            android:textColor="@color/colorPrimary"
-            android:layout_centerVertical="true"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/ordernumberone"
             android:text="立即送餐"
             android:textColor="@color/firsttext_color"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:layout_alignTop="@+id/ordernumbertwo" />
         <TextView
-            android:id="@+id/ordernumbertwo"
+            android:id="@+id/order_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="#2"
@@ -42,6 +36,7 @@
             android:layout_height="wrap_content"
             android:background="@mipmap/icon_first_logo"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
