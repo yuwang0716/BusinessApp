@@ -367,6 +367,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
 
     //PC端是否登陆
     private void getLogin(String name) {
+
         request_login = NoHttp.createStringRequest(API.url_login_wm, RequestMethod.POST);
         request_login.add("platform",name);
         request_login.add("token",token);
@@ -378,30 +379,52 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     JSONObject jsonObject = new JSONObject(response.get());
                     int errno = jsonObject.optInt("errno");
                     if (errno == 200) {
-                        Log.e(TAG, response.get()+"onNext: " );
+                        Log.e(TAG, name+"\n"+response.get() );
                         JSONObject data = jsonObject.optJSONObject("data");
                         JSONObject info = data.optJSONObject("info");
-                        String cookies = info.optString("cookies");
                         sharedPreferences = getContext().getSharedPreferences(name + "cookie", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("cookie", cookies);
-                        editor.commit();
-                        if (name == "baidu") {
-                            firstBaiduclose.setVisibility(View.GONE);
-                            firstBaiduOpen.setVisibility(View.VISIBLE);
-                            isSuccsess_baidu = true;
-                        }
-                        if (name == "meit") {
-                            firstMeituanClose.setVisibility(View.GONE);
-                            firstMeituanOpen.setVisibility(View.VISIBLE);
-                            isSuccsess_meituan = true;
-                        }
-                        if (name == "elem") {
-                            firstElemeClose.setVisibility(View.GONE);
-                            firstElemeOpen.setVisibility(View.VISIBLE);
-                            isSuccsess_elem = true;
-                        }
+                        if (info != null) {
+                            String cookies = info.optString("cookies");
+                            if ("baidu".equals(name)) {
+                                firstBaiduclose.setVisibility(View.GONE);
+                                firstBaiduOpen.setVisibility(View.VISIBLE);
+                                isSuccsess_baidu = true;
+                                editor.putString("cookie", cookies);
+                            }
+                            if ("meit".equals(name)) {
+                                firstMeituanClose.setVisibility(View.GONE);
+                                firstMeituanOpen.setVisibility(View.VISIBLE);
+                                isSuccsess_meituan = true;
+                                editor.putString("cookie", cookies);
+                            }
+                            if ("elem".equals(name)) {
+                                firstElemeClose.setVisibility(View.GONE);
+                                firstElemeOpen.setVisibility(View.VISIBLE);
+                                isSuccsess_elem = true;
+                                editor.putString("uuid", cookies.split("=")[1].split(";")[0]);
+                                editor.putString("ksid", cookies.split("=")[2].split(";")[0]);
+                                editor.putString("shopId", cookies.split("=")[4].split(";")[0]);
+                                editor.commit();
+                            }
+                        }else {
+                            if ("baidu".equals(name)) {
+                                firstBaiduclose.setVisibility(View.VISIBLE);
+                                firstBaiduOpen.setVisibility(View.GONE);
+                                isSuccsess_baidu = false;
 
+                            }else if ("meit".equals(name)){
+                                firstMeituanClose.setVisibility(View.VISIBLE);
+                                firstMeituanOpen.setVisibility(View.GONE);
+                                isSuccsess_meituan = false;
+                                editor.clear().commit();
+                            }else {
+                                firstElemeClose.setVisibility(View.VISIBLE);
+                                firstElemeOpen.setVisibility(View.GONE);
+                                isSuccsess_elem = false;
+                            }
+                            editor.clear().commit();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -458,7 +481,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     firstMeituanOpen.setVisibility(View.GONE);
                     firstMeituanClose.setVisibility(View.VISIBLE);
                     isSuccsess_meituan = false;
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("meituancookie", Context.MODE_APPEND);
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("meitcookie", Context.MODE_APPEND);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
                     editor.commit();
@@ -475,7 +498,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                     firstElemeOpen.setVisibility(View.GONE);
                     firstElemeClose.setVisibility(View.VISIBLE);
                     isSuccsess_elem = false;
-                    SharedPreferences sharedPreferences = mContext.getSharedPreferences("elemecookie", Context.MODE_APPEND);
+                    SharedPreferences sharedPreferences = mContext.getSharedPreferences("elemcookie", Context.MODE_APPEND);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
                     editor.commit();
@@ -525,7 +548,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 if (isSuccsess_baidu) {
                     firstBaiduclose.setVisibility(View.GONE);
                     firstBaiduOpen.setVisibility(View.VISIBLE);
-                    commitThird(data, "baidu", "baidu");
+                    commitThird(data, "baidu");
                 }
             }
             //美团外卖返回
@@ -534,7 +557,7 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 if (isSuccsess_meituan) {
                     firstMeituanClose.setVisibility(View.GONE);
                     firstMeituanOpen.setVisibility(View.VISIBLE);
-                    commitThird(data, "meituan", "meit");
+                    commitThird(data,  "meit");
                 }
             }
             //饿了么外卖返回
@@ -543,14 +566,14 @@ public class FirstFragment extends Fragment implements View.OnClickListener {
                 if (isSuccsess_elem) {
                     firstElemeClose.setVisibility(View.GONE);
                     firstElemeOpen.setVisibility(View.VISIBLE);
-                    commitThird(data, "elme", "elem");
+                    commitThird(data, "elem");
                 }
             }
         }
     }
 
-    private void commitThird(Intent data, String thirdName, String platform) {
-        sharedPreferences = mContext.getSharedPreferences(thirdName + "cookie", Context.MODE_APPEND);
+    private void commitThird(Intent data, String platform) {
+        sharedPreferences = mContext.getSharedPreferences(platform + "cookie", Context.MODE_APPEND);
         String cookie = sharedPreferences.getString("cookie", "");
         Request<String> request_wmCommit = NoHttp.createStringRequest(API.url_system_wmCommit, RequestMethod.POST);
         request_wmCommit.add("token", token);

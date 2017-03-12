@@ -2,7 +2,6 @@ package com.liuhesan.app.businessapp.fragment;
 
 
 import android.content.Context;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,30 +19,21 @@ import com.cjj.MaterialRefreshListener;
 import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.adapter.UrgingOrderAdapter;
 import com.liuhesan.app.businessapp.bean.User;
-import com.liuhesan.app.businessapp.jsonstring.Jsonurgeorder_meit;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.L;
 import com.liuhesan.app.businessapp.utility.NewOrderData_baidu;
-import com.liuhesan.app.businessapp.utility.NewOrderData_meituan;
 import com.liuhesan.app.businessapp.utility.UrgeOrderData_meituan;
-import com.yolanda.nohttp.Binary;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
-import com.yolanda.nohttp.rest.Response;
 import com.yolanda.nohttp.rest.SimpleResponseListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -71,8 +61,8 @@ public class UrgeFragment extends Fragment {
                         urgsOrder_baidu.clear();
                     }
                     initBaiduData("baidu");
-                    initMeitData("meituan");
-                    initElemData("eleme");
+                    initMeitData("meit");
+                    initElemData("elem");
                     break;
             }
         }
@@ -88,8 +78,8 @@ public class UrgeFragment extends Fragment {
         requestQueue = NoHttp.newRequestQueue();
         urgsOrder_baidu = new ArrayList<>();
         initBaiduData("baidu");
-        initMeitData("meituan");
-        initElemData("eleme");
+        initMeitData("meit");
+        initElemData("elem");
         getRepeatData();
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
@@ -98,8 +88,8 @@ public class UrgeFragment extends Fragment {
                     urgsOrder_baidu.clear();
                 }
                 initBaiduData("baidu");
-                initMeitData("meituan");
-                initElemData("eleme");
+                initMeitData("meit");
+                initElemData("elem");
                 materialRefreshLayout.finishRefresh();
             }
         });
@@ -149,7 +139,7 @@ public class UrgeFragment extends Fragment {
 
                                     urgsOrder_baidu = NewOrderData_baidu.getNewOrderData(response.get());
                                     if (mUrgingOrderAdapter == null) {
-                                        mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), urgsOrder_baidu, "baidu");
+                                        mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), urgsOrder_baidu, "baidu",1);
                                         mListView.setAdapter(mUrgingOrderAdapter);
                                     } else {
                                         mUrgingOrderAdapter.notifyDataSetChanged();
@@ -190,7 +180,7 @@ public class UrgeFragment extends Fragment {
                                 Log.e(TAG, "美团催单详情：\n"+response.get());
                                 urgsOrder_meit = UrgeOrderData_meituan.getUrgeOrderData(response.get());
                                 if (mUrgingOrderAdapter == null) {
-                                    mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), urgsOrder_meit, "meit");
+                                    mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), urgsOrder_meit, "meit",1);
                                     mListView.setAdapter(mUrgingOrderAdapter);
                                 } else {
                                     urgsOrder_baidu.addAll(urgsOrder_meit);

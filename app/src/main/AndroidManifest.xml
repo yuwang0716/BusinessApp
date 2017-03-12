@@ -52,15 +52,19 @@
             android:name=".ui.personcenter.LoginBaiduActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.FloatActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"
             android:windowSoftInputMode="stateVisible|adjustResize">
-             
             <category android:name="android.intent.category.LAUNCHER" />
         </activity>
         <activity
             android:name=".ui.personcenter.LoginThirdActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait" />
+            android:theme="@style/AlertNoActionBar"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize">
+            <category android:name="android.intent.category.LAUNCHER" />
+        </activity>
+
         <activity
             android:name=".ui.personcenter.PrintSettingActivity"
             android:configChanges="keyboardHidden|orientation"

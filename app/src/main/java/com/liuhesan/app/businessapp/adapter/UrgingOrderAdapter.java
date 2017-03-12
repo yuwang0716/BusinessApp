@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -60,11 +59,13 @@ public class UrgingOrderAdapter extends BaseAdapter {
     HashMap<Integer, View> map = new HashMap<Integer, View>();
     private RequestQueue requestQueue;
     private List<UrgeDetails> urgeDetailses;
-    public UrgingOrderAdapter(Context mContext, List<User> urgeOrder_data, String name) {
+    private int status;
+    public UrgingOrderAdapter(Context mContext, List<User> urgeOrder_data, String name,int status) {
         this.mContext = mContext;
         this.urgeOrder_data = urgeOrder_data;
         this.name = name;
         requestQueue = NoHttp.newRequestQueue();
+        this.status = status;
     }
 
     @Override
@@ -138,17 +139,20 @@ public class UrgingOrderAdapter extends BaseAdapter {
         mViewHolder.caution.setText(urgeOrder_data.get(position).getCaution());
 
         urgeDetailses = urgeOrder_data.get(position).getRemind_list();
-        if (urgeDetailses != null){
-            UrgsAdapter urgsAdapter = new UrgsAdapter(mContext, urgeDetailses,"baidu");
-            mViewHolder.urginglist.setAdapter(urgsAdapter);
-        }
-        if (name== "meit"){
-            getData(position,mViewHolder.urginglist);
+        if (status == 1){
+            if (urgeDetailses != null){
+                UrgsAdapter urgsAdapter = new UrgsAdapter(mContext, urgeDetailses,"baidu");
+                mViewHolder.urginglist.setAdapter(urgsAdapter);
+            }
+            if (name== "meit"){
+                getData(position,mViewHolder.urginglist);
 
+            }
         }
+
 
         //美团操作订单的一些参数
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituan", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(name+"cookie", Context.MODE_PRIVATE);
         String cookie = sharedPreferences.getString("cookie", "");
         String[] split = cookie.split(";");
         if (split.length > 10) {
@@ -157,7 +161,7 @@ public class UrgingOrderAdapter extends BaseAdapter {
             token = split[8].split("=")[1];
         }
         //饿了么操作订单的一些参数
-        sharedPreferences = mContext.getSharedPreferences("meituan", Context.MODE_PRIVATE);
+        sharedPreferences = mContext.getSharedPreferences(name+"cookie", Context.MODE_PRIVATE);
         String uuid = sharedPreferences.getString("cookie", "");
         String ksid = sharedPreferences.getString("ksid", "");
         String typeCode = "FORCE_REJECT_ORDER";
@@ -243,7 +247,7 @@ public class UrgingOrderAdapter extends BaseAdapter {
     }
 
     private void getData(int position, ListViewForScrollView urginglist) {
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meitcookie", Context.MODE_PRIVATE);
         String cookie = sharedPreferences.getString("cookie", "");
         Request<String> request = NoHttp.createStringRequest(API.url_meituan_reminder_times, RequestMethod.GET);
         request.addHeader("Cookie",cookie);

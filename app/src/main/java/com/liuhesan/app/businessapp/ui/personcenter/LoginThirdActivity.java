@@ -80,11 +80,12 @@ public class LoginThirdActivity extends AppCompatActivity {
         //美团登录
         CookieStore cookieStore = NoHttp.getCookieManager().getCookieStore();
         if (title.equals("登录美团外卖")) {
-
             //获取uuid
             try {
-                httpCookies_meit = cookieStore.get(new URI(API.url_meituan_uuid ));
-                Log.e(TAG, httpCookies_meit+"successLogin: " );
+
+                httpCookies_meit = cookieStore.get(new URI(API.url_meituan_uuid));
+                Log.e(TAG, 1+"\n"+httpCookies_meit);
+
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -100,7 +101,7 @@ public class LoginThirdActivity extends AppCompatActivity {
                 @Override
                 public void onSucceed(int what, Response<String> response) {
                     super.onSucceed(what, response);
-                    Log.e(TAG,10+"\n"+ response.toString());
+
                     try {
                         JSONObject jsonObject = new JSONObject(response.get());
                         int code = jsonObject.optInt("code");
@@ -116,13 +117,14 @@ public class LoginThirdActivity extends AppCompatActivity {
                             String wmPoiId = data.optString("wmPoiId");
                             String acctId = data.optString("acctId");
                             String accessToken = data.optString("accessToken");
-                            SharedPreferences sharedPreferences = getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
+                            SharedPreferences sharedPreferences = getSharedPreferences("meitcookie", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                           editor.putString("cookie", response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
-                            editor.putString("wmPoiId", wmPoiId);
-                            editor.putString("acctId", acctId);
-                            editor.putString("accessToken", accessToken);
-                            editor.commit();
+                                editor.putString("cookie", response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
+                                editor.putString("wmPoiId", wmPoiId);
+                                editor.putString("acctId", acctId);
+                                editor.putString("accessToken", accessToken);
+                                editor.commit();
+                            Log.e(TAG,httpCookies_meit.toString().replace("[","").replace("]","").replace(",",";")+"\n"+ response.getHeaders().getCookies().toString().replace("[","").replace("]","").replace(",",";"));
                             Intent intent = new Intent();
                             intent.putExtra("isSuccsess_meituan",true);
                             LoginThirdActivity.this.setResult(21,intent);
@@ -139,7 +141,7 @@ public class LoginThirdActivity extends AppCompatActivity {
         if (title.equals("登录饿了么外卖")) {
 
             //获取uuid
-            Request<String> request_uuid = NoHttp.createStringRequest(API.url_uuid_eleme_uuid, RequestMethod.POST);
+            Request<String> request_uuid = NoHttp.createStringRequest(API.url_uuid_eleme_uuid, RequestMethod.GET);
             requestQueue.add(20, request_uuid, new SimpleResponseListener<String>() {
                 @Override
                 public void onSucceed(int what, Response<String> response) {
@@ -166,23 +168,41 @@ public class LoginThirdActivity extends AppCompatActivity {
                                 if (succeed){
                                     JSONObject successData = result.optJSONObject("successData");
                                     ksid = successData.optString("ksid");
-                                    JSONArray shops = successData.getJSONArray("shops");
-                                    for (int i = 0; i < shops.length(); i++) {
-                                        JSONObject shopObject = shops.optJSONObject(i);
-                                        shopId = shopObject.optString("id");
-                                    }
-                                    SharedPreferences sharedPreferences = LoginThirdActivity.this.getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
+
+                                    SharedPreferences sharedPreferences = LoginThirdActivity.this.getSharedPreferences("elemcookie", Context.MODE_PRIVATE);
                                     SharedPreferences.Editor edit = sharedPreferences.edit();
                                     edit.putString("uuid",uuid);
                                     edit.putString("ksid",ksid);
-                                    edit.putString("shopId",shopId);
                                     edit.commit();
+                                    Request<String> request_shopid = NoHttp.createStringRequest(API.url_uuid_eleme_shopid, RequestMethod.POST);
+                                    String json_shopid = "{\"id\":\"" +uuid_elem+"\",\"method\":\"getAllShops\",\"service\":\"queryShop\",\"params\":{},\"metas\":{\"appName\":\"melody\",\"appVersion\":\"4.4.0\",\"ksid\":\""+ksid+"\"},\"ncp\":\"2.0.0\"}\n";
+                                    Log.e(TAG, "json_shopid:\n"+json_shopid );
+                                    request_shopid.setDefineRequestBodyForJson(json_shopid);
+                                    requestQueue.add(22, request_shopid, new SimpleResponseListener<String>() {
+                                        @Override
+                                        public void onSucceed(int what, Response<String> response) {
+                                            super.onSucceed(what, response);
+                                            Log.e(TAG, response.get()+"onSucceed: " );
+                                            try {
+                                                JSONObject object = new JSONObject(response.get());
+                                                JSONArray result_shopid = object.optJSONArray("result");
+                                               String shopId = result_shopid.optJSONObject(0).optString("id");
+                                                edit.putString("shopId",shopId).commit();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                    });
+
                                     Intent intent = new Intent();
                                     intent.putExtra("isSuccsess_elem",true);
                                     LoginThirdActivity.this.setResult(31,intent);
                                     finish();
                                 }else {
-                                    Toast.makeText(LoginThirdActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
+                                    JSONObject failureData = result.optJSONObject("failureData");
+                                    String errorMessage = failureData.optString("errorMessage");
+                                    Toast.makeText(LoginThirdActivity.this,errorMessage,Toast.LENGTH_SHORT).show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

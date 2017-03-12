@@ -31,7 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,7 +46,8 @@ public class RefundorderFragment extends Fragment {
     private View view;
     private Context mContext;
     private RequestQueue requestQueue;
-    private List<User> refundOrder_baidu,refundOrder_meit;
+    private List<User> refundOrder,refundOrder_baidu,refundOrder_meit;
+    private Set<List<User>> lists;
     private UrgingOrderAdapter mUrgingOrderAdapter;
     private ListView mListView;
     private MaterialRefreshLayout refreshLayout;
@@ -55,8 +58,8 @@ public class RefundorderFragment extends Fragment {
             switch (msg.what){
                 case 0:
                     initBaiduData("baidu");
-                    initMeitData("meituan");
-                    initElemData("eleme");
+                    initMeitData("meit");
+                    initElemData("elem");
                     break;
             }
         }
@@ -66,22 +69,22 @@ public class RefundorderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_first_remind_refundorder, container, false);
         requestQueue = NoHttp.newRequestQueue();
+        refundOrder = new ArrayList<>();
         refundOrder_baidu = new ArrayList<>();
+        refundOrder_meit = new ArrayList<>();
+        lists = new HashSet<>();
         mListView = (ListView) view.findViewById(R.id.refund_listview);
         refreshLayout = (MaterialRefreshLayout) view.findViewById(R.id.refresh);
         initBaiduData("baidu");
-        initMeitData("meituan");
-        initElemData("eleme");
+        initMeitData("meit");
+        initElemData("elem");
         getRepeatData();
         refreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
-                if (refundOrder_baidu == null){
-                    refundOrder_baidu.clear();
-                }
                 initBaiduData("baidu");
-                initMeitData("meituan");
-                initElemData("eleme");
+                initMeitData("meit");
+                initElemData("elem");
                 materialRefreshLayout.finishRefresh();
             }
         });
@@ -166,11 +169,23 @@ public class RefundorderFragment extends Fragment {
                                 Log.e(TAG, "美团退单详情：\n" + response.get() + "onSucceed: ");
                                 refundOrder_meit = RefundOrderData_meituan.getRefundOrderData(response.get());
                                 if (mUrgingOrderAdapter == null) {
-                                    mUrgingOrderAdapter = new UrgingOrderAdapter(getContext(), refundOrder_meit, "meit");
+                                    lists.add(refundOrder_meit);
+                                    refundOrder.addAll(refundOrder_meit);
+                                    mUrgingOrderAdapter = new UrgingOrderAdapter(mContext, refundOrder, "meit",2);
                                     mListView.setAdapter(mUrgingOrderAdapter);
                                 } else {
-                                    refundOrder_baidu.addAll(refundOrder_meit);
-                                    mUrgingOrderAdapter.notifyDataSetChanged();
+                                    lists.add(refundOrder_meit);
+                                    if (refundOrder_baidu.size() == 0 && !lists.contains(refundOrder_meit)){
+                                        refundOrder.clear();
+                                        refundOrder.addAll(refundOrder_meit);
+                                        mUrgingOrderAdapter.notifyDataSetChanged();
+                                    }else if (refundOrder_baidu.size() != 0 ){
+                                        refundOrder.clear();
+                                        Log.e(TAG, refundOrder.size()+ "onSucceed: ");
+                                        refundOrder.addAll(refundOrder_baidu);
+                                        refundOrder.addAll(refundOrder_meit);
+                                        mUrgingOrderAdapter.notifyDataSetChanged();
+                                    }
                                 }
                             }
                         });
@@ -191,7 +206,7 @@ public class RefundorderFragment extends Fragment {
         String json ="{\"id\":\"" + uuid + "\",\"method\":\"pollingForLowFrequency\",\"service\":" +
                 "\"PollingService\",\"params\":{\"shopId\":\"" + shopId + "\"},\"metas\":{\"appName\":\"melody\"," +
                 "\"appVersion\":\"4.4.1\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
-
+        Log.e(TAG,"饿了么json：\n"+json+ "onSucceed: ");
         Request<String> request_notification = NoHttp.createStringRequest(API.url_eleme_reminder, RequestMethod.POST);
         request_notification.setDefineRequestBodyForJson(json);
         requestQueue.add(30, request_notification, new SimpleResponseListener<String>() {
@@ -207,9 +222,8 @@ public class RefundorderFragment extends Fragment {
                     if ( refundOrderCount > 0){
                         String json ="{\"id\":\"" + uuid + "\",\"method\":\"queryOrder\",\"service\":" +
                                 "\"OrderService\",\"params\":{\"shopId\":\"" + shopId + "\",\"orderFilter\":\"QUERY_ALL_REMIND_ORDERS\",\"condition\":{" +
-                                "                    \"remindOrderTypes\":[\"EXCEPTION_ORDER\",\"REFUND_ORDER\",\"CANCEL_ORDER\",\"REMIND_ORDER\",\"BOOKING_ORDER\"]" +
-                                "                }},\"metas\":{\"appName\":\"melody\"," +
-                                "\"appVersion\":\"4.4.2\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+                                " \"remindOrderTypes\":[\"EXCEPTION_ORDER\",\"REFUND_ORDER\",\"CANCEL_ORDER\",\"REMIND_ORDER\",\"BOOKING_ORDER\"]" +
+                                " }},\"metas\":{\"appName\":\"melody\",\"appVersion\":\"4.4.2\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
                         Request<String> request_details = NoHttp.createStringRequest(API.url_eleme_reminder_details, RequestMethod.POST);
                         request_notification.setDefineRequestBodyForJson(json);
                         requestQueue.add(31, request_details, new SimpleResponseListener<String>() {

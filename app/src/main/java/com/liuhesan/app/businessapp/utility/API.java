@@ -36,7 +36,8 @@ public class API {
 
     //美团外卖
     public static final String url_meituan = "http://e.waimai.meituan.com/";
-    public static final String url_meituan_base = "https://waimaie.meituan.com/v2/order/";
+    //public static final String url_meituan_base = "https://waimaie.meituan.com/v2/order/";
+    public static final String url_meituan_base = url_meituan+"v2/order/";
     public static final String url_meituan_uuid = url_meituan+"logon";
     public static final String url_meituan_logon = url_meituan+"v2/logon/pass/step1/logon";
     public static final String url_meituan_shopstatus = "https://waimaie.meituan.com/api/poi/change_status";
@@ -54,6 +55,7 @@ public class API {
     public static final String url_uuid_eleme = "http://melody.shop.ele.me/eleme/";
     public static final String url_eleme = "https://app-api.shop.ele.me/";
     public static final String url_uuid_eleme_uuid = "http://m.ele.me/place";
+    public static final String url_uuid_eleme_shopid = url_eleme+"shop/invoke/?method=queryShop.getAllShops";
     public static final String url_eleme_shopstatus = url_eleme+"shop/invoke/?method=";
     public static final String url_eleme_logon = url_eleme+"arena/invoke/?method=LoginService.loginByUsername";
     public static final String url_eleme_notification = url_eleme+"nevermore/invoke/?method=PollingService.pollingForHighFrequency";

@@ -19,8 +19,6 @@ import com.liuhesan.app.businessapp.R;
 import com.liuhesan.app.businessapp.utility.API;
 import com.liuhesan.app.businessapp.utility.AppManager;
 import com.liuhesan.app.businessapp.utility.HookViewClickUtil;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.Request;
@@ -33,8 +31,6 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Response;
 
 /**
  * Created by Tao on 2016/11/28.
@@ -90,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                         super.onSucceed(what, response);
-                        Log.e(TAG, response.get() + "onSuccess: ");
+
                         try {
                             JSONObject object = new JSONObject(response.get());
                             int errno = object.optInt("errno");
@@ -110,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
+
                             }
                             if (errno == 201) {
                                 Toast.makeText(LoginActivity.this, "密码不正确", Toast.LENGTH_SHORT).show();
@@ -154,11 +151,22 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e(TAG, response.get()+"onSuccess:\n "+name );
                         JSONObject data = jsonObject.optJSONObject("data");
                         JSONObject info = data.optJSONObject("info");
-                        String cookies = info.optString("cookies");
                         SharedPreferences sharedPreferences = getSharedPreferences(name + "cookie", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("cookie", cookies);
-                        editor.commit();
+                        if (info != null){
+                            String cookies = info.optString("cookies");
+                            if ("elem".equals(name)){
+                                editor.putString("uuid", cookies.split("=")[1].split(";")[0]);
+                                editor.putString("ksid", cookies.split("=")[2].split(";")[0]);
+                                editor.putString("shopId", cookies.split("=")[4].split(";")[0]);
+                            }else {
+                                editor.putString("cookie", cookies);
+                            }
+                            editor.commit();
+                        }else {
+                            editor.clear().commit();
+                        }
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -26,4 +26,5 @@
     <color name="mine_text_two">#bcbcbd</color>
     <color name="mine_text_vip">#555454</color>
     <color name="textColorHint">#d2d5d4</color>
+    <color name="transparent_background">#00000000</color> 
 </resources>

@@ -59,6 +59,8 @@ public class NewOrderAdapter extends BaseAdapter {
     private String cookie_baidu;
     private String order_wm_id;
     private String cookie_meit;
+    private String uuid;
+    private String ksid;
 
     public NewOrderAdapter(Context mContext, List<User> newOrder_data, String name) {
         this.mContext = mContext;
@@ -117,6 +119,7 @@ public class NewOrderAdapter extends BaseAdapter {
         }
         mViewHolder.shop_price.setText("总共" + newOrder_data.get(position).getShop_price() + "元");
 
+        sharedPreferences_wm = mContext.getSharedPreferences(name + "cookie", Context.MODE_PRIVATE);
         if (name == "baidu") {
             String date = getDate(position, "yyyy/M/d HH:mm");
             int lastIndexOf = date.lastIndexOf(" ");
@@ -124,6 +127,11 @@ public class NewOrderAdapter extends BaseAdapter {
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(date);
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_baidu));
+
+            //百度操作订单的一些参数
+            cookie_baidu = sharedPreferences_wm.getString("cookie", "");
+            order_wm_id = newOrder_data.get(position).getOrder_wm_id();
+
         } else if (name == "meit") {
             String date = newOrder_data.get(position).getCreate_time();
             int lastIndexOf = date.lastIndexOf(" ");
@@ -131,6 +139,12 @@ public class NewOrderAdapter extends BaseAdapter {
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_meituan));
+
+            //美团操作订单的一些参数
+            cookie_meit = sharedPreferences_wm.getString("cookie", "");
+            token = sharedPreferences_wm.getString("accessToken", "");
+            wmPoiId = sharedPreferences_wm.getString("wmPoiId", "");
+            acctId = sharedPreferences_wm.getString("acctId", "");
         } else {
             String date = newOrder_data.get(position).getCreate_time();
 
@@ -139,6 +153,10 @@ public class NewOrderAdapter extends BaseAdapter {
             mViewHolder.ordertime.setText(substring + "下单");
             mViewHolder.orderdata.setText(newOrder_data.get(position).getCreate_time());
             mViewHolder.logo.setBackground(mContext.getResources().getDrawable(R.mipmap.icon_eleme));
+
+            //饿了么操作订单的一些参数
+            uuid = sharedPreferences_wm.getString("uuid", "");
+            ksid = sharedPreferences_wm.getString("ksid", "");
         }
         mViewHolder.send_time.setText(newOrder_data.get(position).getSend_time());
 
@@ -154,21 +172,10 @@ public class NewOrderAdapter extends BaseAdapter {
         mViewHolder.shop_other_discount.setText(newOrder_data.get(position).getShop_other_discount_price());
         mViewHolder.totalPrice.setText(newOrder_data.get(position).getShop_price());
         mViewHolder.caution.setText(newOrder_data.get(position).getCaution());
-        //百度操作订单的一些参数
-        sharedPreferences_wm = mContext.getSharedPreferences(name + "cookie", Context.MODE_PRIVATE);
-        cookie_baidu = sharedPreferences_wm.getString("cookie", "");
-        order_wm_id = newOrder_data.get(position).getOrder_wm_id();
 
-        //美团操作订单的一些参数
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences("meituancookie", Context.MODE_PRIVATE);
-        cookie_meit = sharedPreferences.getString("cookie", "");
-        token = sharedPreferences.getString("accessToken", "");
-        wmPoiId = sharedPreferences.getString("wmPoiId", "");
-        acctId = sharedPreferences.getString("acctId", "");
-        //饿了么操作订单的一些参数
-        sharedPreferences = mContext.getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
-        String uuid = sharedPreferences.getString("uuid", "");
-        String ksid = sharedPreferences.getString("ksid", "");
+
+
+
 
 
         //订单操作
@@ -215,7 +222,7 @@ public class NewOrderAdapter extends BaseAdapter {
 
                 }
                 //饿了么接单
-                if (name == "eleme") {
+                if (name == "elem") {
                     String params = "{\"id\":\"" + uuid + "\",\"method\":\"confirmOrder\",\"service\"" +
                             ":\"order\",\"params\": {\"orderId\":\"" + order_wm_id + "},\"metas\": {\"appName\":\"melody\",\"" +
                             "appVersion\":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
@@ -300,7 +307,7 @@ public class NewOrderAdapter extends BaseAdapter {
                     builder.show();
                 }
                 //饿了么取消订单
-                if (name == "eleme") {
+                if (name == "elem") {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle("取消原因");
                     final String[] reasons_elem = {"不在配送范围", "美食已售完", "用户致电取消", "联系不上用户", "餐厅太忙","其它"};

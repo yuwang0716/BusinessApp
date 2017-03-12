@@ -151,7 +151,7 @@ public class NeworderFragment extends Fragment {
                 message.what = 0;
                  handler.sendMessage(message);
             }
-        },1000,30*1000);
+        },0,30*1000);
     }
 
     //获取百度新订单
@@ -216,7 +216,7 @@ public class NeworderFragment extends Fragment {
     //获取美团新订单
     private void getMeituanOrderData() {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("meituan" + "cookie", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("meit" + "cookie", Context.MODE_PRIVATE);
         String cookie = sharedPreferences.getString("cookie", "");
         Request<String> request = NoHttp.createStringRequest(API.url_meituan_notification, RequestMethod.GET);
         request.addHeader("Cookie",cookie );
@@ -225,6 +225,7 @@ public class NeworderFragment extends Fragment {
             public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                 super.onSucceed(what, response);
                 JSONObject jsonObject = null;
+                Log.e(TAG, "美团新订单：\n"+response.get()+"onSucceed: ");
                 try {
                     jsonObject = new JSONObject(response.get());
                     JSONObject data = jsonObject.optJSONObject("data");
@@ -252,12 +253,12 @@ public class NeworderFragment extends Fragment {
                                     @Override
                                     public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
                                         super.onSucceed(what, response);
-                                        newOrderData_meit = NewOrderData_meituan.getNewOrderData(response.get());
+                                       newOrderData_meit = NewOrderData_meituan.getNewOrderData(response.get());
                                         Log.e(TAG, "美团新订单详情：\n"+Jsonneworder_meituan.neworder+"onSucceed: ");
                                         if (mNewOrderAdapter == null) {
                                             lists.add(newOrderData_meit);
                                             newOrder_data.addAll(newOrderData_meit);
-                                            mNewOrderAdapter = new NewOrderAdapter(getContext(), newOrder_data,"meit");
+                                            mNewOrderAdapter = new NewOrderAdapter(context, newOrder_data,"meit");
                                             mListView.setAdapter(mNewOrderAdapter);
                                         }else {
                                            lists.add(newOrderData_meit);
@@ -292,13 +293,14 @@ public class NeworderFragment extends Fragment {
 
          //获取饿了么新订单
          private void getElemeOrderData() {
-             SharedPreferences sharedPreferences = context.getSharedPreferences("elemecookie", Context.MODE_PRIVATE);
+             SharedPreferences sharedPreferences = context.getSharedPreferences("elemcookie", Context.MODE_PRIVATE);
              uuid = sharedPreferences.getString("uuid", "");
              ksid = sharedPreferences.getString("ksid", "");
              shopId = sharedPreferences.getString("shopId", "");
-             String json = "{\"id\":\"" + uuid + "\",\"method\":\"pollingForHighFrequency\n\",\"service\":" +
-                     "\"PollingService\",\"params\":{\"shopId\":" + shopId + "},\"metas\":{\"appName\":\"melody\"," +
-                     "\"appVersion\":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+             String json = "{\"id\":\"" + uuid + "\",\"method\":\"pollingForHighFrequency\",\"service\":" +
+                     "\"PollingService\",\"params\":{\"shopId\":" + shopId + ",\"orderIds\":[]},\"metas\":{\"appName\":\"melody\"," +
+                     "\"appVersion\":\"4.4.1\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+             Log.e(TAG, json);
              Request<String> request_notification = NoHttp.createStringRequest(API.url_eleme_notification, RequestMethod.POST);
              request_notification.setDefineRequestBodyForJson(json);
              requestQueue.add(30, request_notification, new SimpleResponseListener<String>() {
@@ -307,51 +309,56 @@ public class NeworderFragment extends Fragment {
                      super.onSucceed(what, response);
                      try {
                          JSONObject jsonObject = new JSONObject(response.get());
-                         String result = jsonObject.optString("result");
-                         if (!"null".equals(result)) {
-                             //新订单上报服务器
-                             reportedData("elem",response.get());
-                             //获取新订单详情
-                             String json = "{\"id\":\"" + uuid + "\",\"method\":\"queryOrder\",\"service\":" +
-                                     "\"OrderService\",\"params\":{\"shopId\":\"" + shopId + "\",\"orderFilter\":" +
-                                     "\"UNPROCESSED_ORDERS\"},\"metas\":{\"appName\":\"melody\",\"appVersion\"" +
-                                     ":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
-                             Request<String> request_neworder_details = NoHttp.createStringRequest(API.url_eleme_notification, RequestMethod.POST);
-                             request_notification.setDefineRequestBodyForJson(json);
-                             requestQueue.add(31, request_neworder_details, new SimpleResponseListener<String>() {
-                                 @Override
-                                 public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
-                                     super.onSucceed(what, response);
-                                     newOrderData_eleme = NewOrderData_eleme.getNewOrderData(response.get());
-                                     Log.e(TAG, "饿了么新订单详情：\n"+response.get()+"onSucceed: ");
-                                     if (mNewOrderAdapter == null) {
-                                         lists.add(newOrderData_eleme);
-                                         newOrder_data.addAll(newOrderData_eleme);
-                                         mNewOrderAdapter = new NewOrderAdapter(context, newOrder_data,"eleme");
-                                         mListView.setAdapter(mNewOrderAdapter);
-                                     }else {
-                                         newOrder_data.addAll( newOrderData_eleme);
-                                         mNewOrderAdapter.notifyDataSetChanged();
-
-                                         lists.add( newOrderData_eleme);
-                                         if (newOrderData_baidu == null && newOrderData_meit == null && !lists.contains(newOrderData_meit)){
-                                             newOrder_data.clear();
-                                             newOrder_data.addAll(newOrderData_meit);
-                                             mNewOrderAdapter.notifyDataSetChanged();
-                                         }else if (!lists.contains(newOrderData_meit)){
-                                             newOrder_data.clear();
-                                             newOrder_data.addAll(newOrderData_baidu);
-                                             newOrder_data.addAll(newOrderData_meit);
+                         JSONObject result = jsonObject.optJSONObject("result");
+                         Log.e(TAG, "饿了么新订单：\n"+response.get()+"onSucceed: ");
+                         if (result != null){
+                             int newOrderCount = result.optInt("newOrderCount");
+                             if (newOrderCount > 0) {
+                                 //新订单上报服务器
+                                 reportedData("elem",response.get());
+                                 //获取新订单详情
+                                 String json = "{\"id\":\"" + uuid + "\",\"method\":\"queryOrder\",\"service\":" +
+                                         "\"OrderService\",\"params\":{\"shopId\":\"" + shopId + "\",\"orderFilter\":" +
+                                         "\"UNPROCESSED_ORDERS\"},\"metas\":{\"appName\":\"melody\",\"appVersion\"" +
+                                         ":\"4.4.0\",\"ksid\":\"" + ksid + "\"},\"ncp\":\"2.0.0\"}";
+                                 Request<String> request_neworder_details = NoHttp.createStringRequest(API.url_eleme_notification, RequestMethod.POST);
+                                 request_notification.setDefineRequestBodyForJson(json);
+                                 requestQueue.add(31, request_neworder_details, new SimpleResponseListener<String>() {
+                                     @Override
+                                     public void onSucceed(int what, com.yolanda.nohttp.rest.Response<String> response) {
+                                         super.onSucceed(what, response);
+                                         newOrderData_eleme = NewOrderData_eleme.getNewOrderData(response.get());
+                                         Log.e(TAG, "饿了么新订单详情：\n"+response.get()+"onSucceed: ");
+                                         if (mNewOrderAdapter == null) {
+                                             lists.add(newOrderData_eleme);
                                              newOrder_data.addAll(newOrderData_eleme);
+                                             mNewOrderAdapter = new NewOrderAdapter(context, newOrder_data,"elem");
+                                             mListView.setAdapter(mNewOrderAdapter);
+                                         }else {
+                                             newOrder_data.addAll( newOrderData_eleme);
                                              mNewOrderAdapter.notifyDataSetChanged();
-                                         }else if (newOrder_data.size() == newOrderData_baidu.size() || (newOrder_data.size() == newOrderData_meit.size())){
-                                             newOrder_data.addAll(newOrderData_meit);
-                                             mNewOrderAdapter.notifyDataSetChanged();
+
+                                             lists.add( newOrderData_eleme);
+                                             if (newOrderData_baidu == null && newOrderData_meit == null && !lists.contains(newOrderData_meit)){
+                                                 newOrder_data.clear();
+                                                 newOrder_data.addAll(newOrderData_meit);
+                                                 mNewOrderAdapter.notifyDataSetChanged();
+                                             }else if (!lists.contains(newOrderData_meit)){
+                                                 newOrder_data.clear();
+                                                 newOrder_data.addAll(newOrderData_baidu);
+                                                 newOrder_data.addAll(newOrderData_meit);
+                                                 newOrder_data.addAll(newOrderData_eleme);
+                                                 mNewOrderAdapter.notifyDataSetChanged();
+                                             }else if (newOrder_data.size() == newOrderData_baidu.size() || (newOrder_data.size() == newOrderData_meit.size())){
+                                                 newOrder_data.addAll(newOrderData_meit);
+                                                 mNewOrderAdapter.notifyDataSetChanged();
+                                             }
                                          }
                                      }
-                                 }
-                             });
+                                 });
+                             }
                          }
+
                      } catch (JSONException e) {
                          e.printStackTrace();
                      }

@@ -33,7 +33,7 @@ public class NewOrderData_meituan {
                 user.setUser_real_name(name_data.substring(0,name_data.indexOf("(")));
                 user.setSex(name_data.substring(name_data.indexOf("(")+1,name_data.indexOf(")")));
                 user.setUser_phone(order_list_data.optString("recipient_phone"));
-                user.setOrder_wm_id(order_list_data.optString("wm_order_id_view"));
+                user.setOrder_wm_id(order_list_data.optString("wm_order_id_view_str"));
                 user.setUser_address(order_list_data.optString("recipient_address"));
                 user.setShop_price(order_list_data.optDouble("total_after")+"");
                 user.setCreate_time(order_list_data.optString("order_time_fmt"));
